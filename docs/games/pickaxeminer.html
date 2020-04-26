@@ -55,7 +55,7 @@
             <button class="button button1" onclick="enterdata()" id="btn1" style="display: block; margin-left: auto; margin-right: auto;">Enter Data</button>
             <button class="button button2" onclick="runcmd()" id="btn2" style="display: none; margin-left: auto; margin-right: auto;">Enter Command</button>
         </div>
-        <p id="1" style="color:black;font-size:25px;text-align:left; padding-left: 20%; padding-right: 20%;"></p>
+        <p id="1" style="color:black;font-size:25px;text-align:left; padding-left: 20%; padding-right: 20%;">This is a fairly simple game I have been working on. I know it is annoying to have to save your data somewhere, but since my website host cannot use a database, this is what I have to do. Obviously you can cheat, but I think it is more fun not to. Contact me on Discord to report bugs and/or if you have ideas for this or a brand new HTML game.</p>
     </body>
     <script>
 
@@ -75,7 +75,8 @@
         }
         });
 
-        var array = [0, 0, 0, 1, 50, 0, "wood", 1, 25, "none", 1, 0, 0, 0, 0, 0, 0];
+        var array = ["wood", "none", 0, 0, 0, 1, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 25, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var pgraph = new Array();
 
         function enterdata() {
             let message = (document.getElementById("txt1").value).split(',');
@@ -95,151 +96,204 @@
         let today = new Date;
         let todayms = today.getTime();
 
-        if ((dataarray !== undefined) && (dataarray.length >= 17)) {
+        if ((dataarray !== undefined) && (dataarray.length >= 31)) {
 
-        if (dataarray[0] == 0) {
-            dataarray[0] = todayms;
+        if (dataarray[2] == 0) {
+            dataarray[2] = todayms;
         }
 
-        let totalexp = parseInt(dataarray[1], 10);
-        let totalmined = parseInt(dataarray[2], 10);
-        let armlevel = parseInt(dataarray[3], 10);
-        let nextarmlevel = parseInt(dataarray[4], 10);
-        let exp = parseInt(dataarray[5], 10);
-        let pickaxetype = dataarray[6];
-        let pickaxelevel = parseInt(dataarray[7], 10);
-        let nextpickaxelevel = parseInt(dataarray[8], 10);
-        let mining = dataarray[9];
-        let blocklevel = parseInt(dataarray[10], 10);
-        let sand = parseInt(dataarray[11], 10);
-        let dirt = parseInt(dataarray[12], 10);
-        let stone = parseInt(dataarray[13], 10);
-        let coal = parseInt(dataarray[13], 10);
-        let iron = parseInt(dataarray[13], 10);
-        let redstone = parseInt(dataarray[13], 10);
+        let pickaxetype = dataarray[0];
+        let mining = dataarray[1];
+        let time = parseInt(dataarray[2], 10);
+        let totalexp = parseInt(dataarray[3], 10);
+        let totalmined = parseInt(dataarray[4], 10);
+        let armlevel = parseInt(dataarray[5], 10);
+        let nextarmlevel = parseInt(dataarray[6], 10);
+        let woodexp = parseInt(dataarray[7], 10);
+        let stoneexp = parseInt(dataarray[8], 10);
+        let ironexp = parseInt(dataarray[9], 10);
+        let goldexp = parseInt(dataarray[10], 10);
+        let diamondexp = parseInt(dataarray[11], 10);
+        let mythwoodexp = parseInt(dataarray[12], 10);
+        let mythstoneexp = parseInt(dataarray[13], 10);
+        let mythironexp = parseInt(dataarray[14], 10);
+        let mythgoldexp = parseInt(dataarray[15], 10);
+        let mythdiamondexp = parseInt(dataarray[16], 10);
+        let pickaxelevel = parseInt(dataarray[17], 10);
+        let nextpickaxelevel = parseInt(dataarray[18], 10);
+        let blocklevel = parseInt(dataarray[19], 10);
+        let wood = parseInt(dataarray[20], 10);
+        let mythwood = parseInt(dataarray[21], 10);
+        let sand = parseInt(dataarray[22], 10);
+        let dirt = parseInt(dataarray[23], 10);
+        let stone = parseInt(dataarray[24], 10);
+        let coal = parseInt(dataarray[25], 10);
+        let iron = parseInt(dataarray[26], 10);
+        let redstone = parseInt(dataarray[27], 10);
+        let emerald = parseInt(dataarray[28], 10);
+        let diamond = parseInt(dataarray[29], 10);
+        let bedrock = parseInt(dataarray[30], 10);
 
-        array = [(dataarray[0]), totalexp, totalmined, armlevel, nextarmlevel, exp, pickaxetype, pickaxelevel, nextpickaxelevel, mining, blocklevel, sand, dirt, stone, coal, iron, redstone];
+        array = [pickaxetype, mining, time, totalexp, totalmined, armlevel, nextarmlevel, woodexp, stoneexp, ironexp, goldexp, diamondexp, mythwoodexp, mythstoneexp, mythironexp, mythgoldexp, mythdiamondexp, pickaxelevel, nextpickaxelevel, blocklevel, wood, mythwood, sand, dirt, stone, coal, iron, redstone, emerald, diamond, bedrock];
 
         }
     }
 
     function rungame(message) {
-    
-        let time = parseInt(array[0], 10);
-        let totalexp = parseInt(array[1], 10);
-        let totalmined = parseInt(array[2], 10);
-        let armlevel = parseInt(array[3], 10);
-        let nextarmlevel = parseInt(array[4], 10);
-        let exp = parseInt(array[5], 10);
-        let pickaxetype = array[6];
-        let pickaxelevel = parseInt(array[7], 10);
-        let nextpickaxelevel = parseInt(array[8], 10);
-        let mining = array[9];
-        let blocklevel = parseInt(array[10], 10);
-        let sand = parseInt(array[11], 10);
-        let dirt = parseInt(array[12], 10);
-        let stone = parseInt(array[13], 10);
-        let coal = parseInt(array[13], 10);
-        let iron = parseInt(array[13], 10);
-        let redstone = parseInt(array[13], 10);
+
+        document.getElementById("1").innerHTML = "";
+        pgraph = new Array();
 
         let today = new Date;
         let todayms = today.getTime();
+
+        if (array[2] == 0) {
+            array[2] = todayms;
+        }
+
+        let pickaxetype =  array[0];
+        let mining =  array[1];
+        let time = parseInt( array[2], 10);
+        let totalexp = parseInt( array[3], 10);
+        let totalmined = parseInt( array[4], 10);
+        let armlevel = parseInt( array[5], 10);
+        let nextarmlevel = parseInt( array[6], 10);
+        let woodexp = parseInt( array[7], 10);
+        let stoneexp = parseInt( array[8], 10);
+        let ironexp = parseInt( array[9], 10);
+        let goldexp = parseInt( array[10], 10);
+        let diamondexp = parseInt( array[11], 10);
+        let mythwoodexp = parseInt( array[12], 10);
+        let mythstoneexp = parseInt( array[13], 10);
+        let mythironexp = parseInt( array[14], 10);
+        let mythgoldexp = parseInt( array[15], 10);
+        let mythdiamondexp = parseInt( array[16], 10);
+        let pickaxelevel = parseInt( array[17], 10);
+        let nextpickaxelevel = parseInt( array[18], 10);
+        let blocklevel = parseInt( array[19], 10);
+        let wood = parseInt( array[20], 10);
+        let mythwood = parseInt( array[21], 10);
+        let sand = parseInt( array[22], 10);
+        let dirt = parseInt( array[23], 10);
+        let stone = parseInt( array[24], 10);
+        let coal = parseInt( array[25], 10);
+        let iron = parseInt( array[26], 10);
+        let redstone = parseInt( array[27], 10);
+        let emerald = parseInt( array[28], 10);
+        let diamond = parseInt( array[29], 10);
+        let bedrock = parseInt( array[30], 10);
+
         let splitcommand = message.toLowerCase().split(' ');
         let firstcommand = splitcommand[0];
         let secondcommand = splitcommand[1];
         let thirdcommand = splitcommand[2];
 
-        let blocknames = ["none", "sand", "dirt", "stone", "coal", "iron", "redstone"];
+        let blocknames = ["none", "wood", "mythwood", "sand", "dirt", "stone", "coal", "iron", "redstone", "emerald", "diamond", "bedrock"];
 
         const blocks = { //define the blocks stats
             "none": { //just a filler if they are not mining a block
                 "hardness": 0,
                 "blockexp": 0,
                 "number": 0,
-                "req": 0
+                "req": [0, "none"]
+            },
+            "wood": {
+                "hardness": 20,
+                "blockexp": 2,
+                "number": 1,
+                "req": [0, "none"]
+            },
+            "mythwood": {
+                "hardness": 100,
+                "blockexp": 12.5,
+                "number": 2,
+                "req": [0, "wood"]
             },
             "sand": {
-                "hardness": 7.5,
+                "hardness": 10,
                 "blockexp": 1,
-                "number": 1,
-                "req": 10000
+                "number": 3,
+                "req": [0, "none"]
             },
             "dirt": {
-                "hardness": 10,
+                "hardness": 15,
                 "blockexp": 2,
-                "number": 2,
-                "req": 100000
+                "number": 4,
+                "req": [7500, "sand"]
 
             },
             "stone": {
                 "hardness": 40,
-                "blockexp": 10,
-                "number": 3,
-                "req": 1000000
+                "blockexp": 7.5,
+                "number": 5,
+                "req": [25000, "dirt"]
             },
             "coal": {
                 "hardness": 60,
-                "blockexp": 14,
-                "number": 4,
-                "req": 100000000
+                "blockexp": 10,
+                "number": 6,
+                "req": [75000, "stone", 10000, "wood"]
             },
             "iron": {
                 "hardness": 100,
-                "blockexp": 25,
-                "number": 5,
-                "req": 1000000000
+                "blockexp": 20,
+                "number": 7,
+                "req": [100000, "coal"]
             },
             "redstone": {
                 "hardness": 90,
-                "blockexp": 30,
-                "number": 6,
-                "req": 10000000000
+                "blockexp": 25,
+                "number": 8,
+                "req": [250000, "iron", 150000, "coal"]
             }
         }
 
         const picks = {
             "wood": {
-                "strength": 0.1,
+                "strength": 1,
                 "durability": 1,
                 "explevel": 1.4,
-                "pickexp": 0
+                "index": 7,
+                "pickreq": [0, "none"]
             },
             "stone": {
-                "strength": 0.3,
+                "strength": 3,
                 "durability": 3,
                 "explevel": 1.7,
-                "pickexp": 10000
+                "index": 8,
+                "pickreq": [5000, "stone", 10000, "wood"]
             },
             "iron": {
-                "strength": 1,
+                "strength": 10,
                 "durability": 10,
                 "explevel": 2,
-                "pickexp": 1000000
+                "index": 9,
+                "pickreq": [10000, "iron", 25000, "wood"]
             },
             "gold": {
-                "strength": 1.75,
+                "strength": 20,
                 "durability": 12,
                 "explevel": 3,
-                "pickexp": 10000000
+                "index": 10,
+                "pickreq": [25000, "gold", 50000, "wood"]
             }
         }
 
         let blockarray = new Array();
-        blockarray.push(0, sand, dirt, stone, coal, iron, redstone);
+        blockarray.push(0, wood, mythwood, sand, dirt, stone, coal, iron, redstone, emerald, diamond, bedrock);
 
         let {hardness, blockexp, number, req} = blocks[mining]; //set variables equal to the stats of the block being mined
 
-        let {strength, durability, explevel, pickexp} = picks[pickaxetype]; //same thing for pickaxes
+        let {strength, durability, explevel, index, pickreq} = picks[pickaxetype]; //same thing for pickaxes
 
         if ((firstcommand.includes("coll")) && (mining != "none")) { //check to make sure they are mining a block
-            let timedif = Math.round((todayms - time) / 1000); //calculate how much time is passed
+            let timedif = Math.round((todayms - time) / 1000); //calculate how much time is passed in seconds
             let maxtime = Math.round(durability * pickaxelevel * 100);
             if (timedif > maxtime) { //if more than the durability is passed
                 timedif = maxtime;
             }
 
-            let blockhardness = (hardness - (strength * pickaxelevel));
+            let blockhardness = (hardness - (strength * (pickaxelevel / 10)));
             if (blockhardness < 0.0000000001) {
                 blockhardness = 0.0000000001;
             }
@@ -250,53 +304,66 @@
 
             let addedexp = Math.ceil(added * blockexp);
 
-            blockarray[number] = (blockarray[number] + added);
+            blockarray[number] += added;
 
-            exp = (exp + addedexp);
+            array[index] += addedexp;
 
-            totalexp += addedexp;
+            array[3] += addedexp;
 
-            totalmined += added;
+            array[4] += added;
 
-            if ((blockarray[number] > req) && (blocklevel <= number)) {
-                addtext("You can now mine " + blocknames[number + 1] + "!");
-                array[10] = (number + 1);
-            }
+            // if ((blockarray[number] > req) && (blocklevel <= number)) {
+            //     addtext("You can now mine " + blocknames[number + 1] + "!", 0);
+            //     array[10] = (number + 1);
+            // }
 
-            if (exp > nextpickaxelevel) {
+            if (array[index] > nextpickaxelevel) {
                 nextpickaxelevel = Math.round(nextpickaxelevel * (picks[pickaxetype].explevel));
-                addtext("Pickaxe leveled up to level " + (pickaxelevel + 1) + "!");
-                array[7] = (pickaxelevel + 1);
-                array[8] = nextpickaxelevel;
+                addtext("Pickaxe leveled up to level " + (pickaxelevel + 1) + "!", 0);
+                array[17] = (pickaxelevel + 1);
+                array[18] = nextpickaxelevel;
             }
 
             if (totalexp > nextarmlevel) {
-                addtext("Arm leveled up to level " + (armlevel + 1) + "!");
-                nextarmlevel = Math.round(nextarmlevel * 1.5);
-                array[3] = (armlevel + 1);
-                array[4] = nextarmlevel;
+                addtext("Arm leveled up to level " + (armlevel + 1) + "!", 0);
+                nextarmlevel = Math.round(nextarmlevel * 1.75);
+                array[5] = (armlevel + 1);
+                array[6] = nextarmlevel;
             }
 
-            addtext("You mined for " + (timedif.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + " seconds and got " + (added.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + " blocks of " + mining + "! (" + (addedexp.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + " XP)");
-            array[0] = todayms;
-            array[1] = totalexp;
-            array[2] = totalmined;
-            array[5] = exp;
-            array[(10 + number)] = blockarray[number];
+            addtext("You mined for " + (timedif.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + " seconds and got " + (added.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + " blocks of " + mining + "! (" + (addedexp.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + " XP)", 0);
+            array[2] = todayms;
+            array[(19 + number)] = blockarray[number];
             return;
-        } else if (firstcommand == "collect") {
-            addtext("You are not currently mining!");
+        } else if (firstcommand.includes("coll")) {
+            addtext("You are not currently mining any block!", 0);
             return;
         }
 
         if ((firstcommand == "mine") && (secondcommand !== undefined)) {
             if (blocks[secondcommand] === undefined) {
-                addtext("Not a valid block to mine!");
-            } else if (blocks[secondcommand].number > blocklevel) {
-                addtext("You don't have enough of the last block to mine " + secondcommand + "!");
+                addtext("Not a valid block to mine!", 1);
+                return;
+            }
+            let {hardness, blockexp, number, req} = blocks[secondcommand];
+            let minable = false;
+
+            if (req.length > 2) {
+                if ((array[(19 + (blocks[(req[1])].number))] >= (req[0])) && (array[(19 + (blocks[(req[3])].number))] >= (req[2]))) {
+                    minable = true;
+                }
             } else {
-                addtext("Now mining " + secondcommand + "!");
-                array[9] = secondcommand;
+                if (array[(19 + (blocks[(req[1])].number))] >= (req[0])) {
+                    minable = true
+                }
+            }
+
+            if (minable == false) {
+                addtext("You don't have enough blocks to mine " + secondcommand + "!", 1);
+            } else if (minable == true) {
+                addtext("Now mining " + secondcommand + "!", 1);
+                array[1] = secondcommand;
+                array[2] = todayms;
             }
             return;
         }
@@ -304,66 +371,65 @@
         if ((firstcommand.includes("stat")) && (secondcommand === undefined)) { //view your stats
             let te = totalexp.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             let tmb = totalmined.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            let xp = exp.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            let xp = (array[index]).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             let nal = nextarmlevel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             let npl = nextpickaxelevel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            let blockhardness = (hardness - (strength * pickaxelevel));
-            if (blockhardness < 0.01) {
-                blockhardness = 0.01;
+            let blockhardness = (hardness - (strength * (pickaxelevel / 10)));
+            if (blockhardness < 0.0000000001) {
+                blockhardness = 0.0000000001;
             }
             let blockspeed = ((armlevel / 10) / blockhardness);
             let rate = (((Math.round((1 / blockspeed) * 100)) / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
             let maxtime = (Math.round(durability * pickaxelevel * 100)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             let maxmin = (Math.round((durability * pickaxelevel * 100) / 60)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            addtext("Total Experience: " + te + "<br>Total Blocks Mined:  " + tmb + "<br>Arm Level: " + armlevel + "<br>Total XP For Next Arm Level: " + nal + "<br>Current Exp: " + xp + "<br>Pickaxe Type: " + pickaxetype + "<br>Pickaxe Level: " + pickaxelevel + "<br>XP For Next Pickaxe Level: " + npl + "<br>Block Being Mined: " + mining + "<br>Mining Speed: 1 / " + rate + " seconds<br>Max Away Time: " + maxtime + " seconds (" + maxmin + " minutes)<br><br>Blocks Mined:<br><br>Sand: " + (sand.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Dirt: " + (dirt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Stone: " + (stone.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Coal: " + (coal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Iron: " + (iron.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Redstone: " + (redstone.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")));
+            addtext("Total Experience: " + te + "<br>Total Blocks Mined:  " + tmb + "<br>Arm Level: " + armlevel + "<br>Total XP For Next Arm Level: " + nal + "<br>Current Exp: " + xp + "<br>Pickaxe Type: " + pickaxetype + "<br>Pickaxe Level: " + pickaxelevel + "<br>XP For Next Pickaxe Level: " + npl + "<br>Block Being Mined: " + mining + "<br>Mining Speed: 1 / " + rate + " seconds<br>Max Away Time: " + maxtime + " seconds (" + maxmin + " minutes)<br><br>Blocks Mined:<br><br>Sand: " + (sand.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Dirt: " + (dirt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Stone: " + (stone.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Coal: " + (coal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Iron: " + (iron.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Redstone: " + (redstone.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Emerald: " + (emerald.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Diamond: " + (diamond.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Bedrock: " + (bedrock.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")), 0);
             return;
         }
 
         if ((firstcommand.includes("stat")) && (secondcommand !== undefined)) {
             if ((thirdcommand.includes("block")) && (blocks[secondcommand] !== undefined)) {
-                let {hardness, blockexp, number, req} = blocks[secondcommand]; //set variables equal to the stats of the block being mined
-                addtext((secondcommand.charAt(0).toUpperCase() + secondcommand.slice(1)) + " Block:<br><br>Hardness: " + hardness + "<br>Block XP: " + blockexp + "<br>Required Previous Blocks: " + (req.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")));
+                let {hardness, blockexp, number, req} = blocks[secondcommand]; //set variables equal to the stats of the block being chose
+                addtext((secondcommand.charAt(0).toUpperCase() + secondcommand.slice(1)) + " Block:<br><br>Hardness: " + hardness + "<br>Block XP: " + blockexp + "<br>Required Previous Blocks: " + (req.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")), 0);
             } else if ((thirdcommand.includes("pick")) && (picks[secondcommand] !== undefined)) {
                 let {strength, durability, explevel, pickexp} = picks[secondcommand]; //same thing for pickaxes
-                addtext((secondcommand.charAt(0).toUpperCase() + secondcommand.slice(1)) + " Pickaxe:<br><br>Strength: " + strength + "<br>Durability: " + durability + "<br>XP Level: " + explevel + "<br>Required XP: " + (pickexp.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")));
+                addtext((secondcommand.charAt(0).toUpperCase() + secondcommand.slice(1)) + " Pickaxe:<br><br>Strength: " + strength + "<br>Durability: " + durability + "<br>XP Level: " + explevel + "<br>Required XP: " + (pickexp.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")), 0);
             } else {
-                addtext("Not a valid type of block or pickaxe!");
+                addtext("Not a valid type of block or pickaxe!", 1);
             }
             return;
         }
 
         if ((firstcommand.includes("pick")) && (secondcommand !== undefined)) { //if you want to change your pickaxe type
             if (picks[secondcommand] === undefined) {
-                addtext("Not a valid pickaxe!");
+                addtext("Not a valid pickaxe!", 1);
             } else if (picks[secondcommand].pickexp > totalexp) {
-                addtext("You do not have enough total XP to use the " + secondcommand + " pickaxe!");
+                addtext("You do not have enough total XP to use the " + secondcommand + " pickaxe!", 1);
             } else {
-                addtext("Now using the " + secondcommand + " pickaxe!");
-                array[5] = 0;
+                addtext("Now using the " + secondcommand + " pickaxe!", 1);
                 array[6] = secondcommand;
-                array[7] = 1;
-                array[8] = 25;
+                array[17] = 1;
+                array[18] = 25;
             }
             return;
         }
 
         if (firstcommand.includes("help")) {
-            addtext("<br>Help:<br><br>help - displays this command<br>collect - collects the blocks you have been mining since you last collected<br>mine [block type] - chooses what block to mine<br>pickaxe [pickaxe type] - chooses what pickaxe to mine with<br>stats - displays statistics about your career<br>stats [block type/pickaxe type] [block/pickaxe] - see stats about a certain block or pickaxe<br>automine - automatically collects blocks every 10 seconds<br>export - exports your data so you can come back later and pick up where you left off. Just be sure to keep that exported data saved somewhere!<br><br>Types:<br><br>Blocks - sand, dirt, stone, coal, iron, redstone<br>Pickaxes - wood, stone, iron");
+            addtext("<br>Help:<br><br>help - displays this command<br>collect - collects the blocks you have been mining since you last collected<br>mine [block type] - chooses what block to mine<br>pickaxe [pickaxe type] - chooses what pickaxe to mine with<br>stats - displays statistics about your career<br>stats [block type/pickaxe type] [block/pickaxe] - see stats about a certain block or pickaxe<br>automine - automatically collects blocks every 10 seconds<br>export - exports your data so you can come back later and pick up where you left off. Just be sure to keep that exported data saved somewhere!<br><br>Types:<br><br>Blocks - sand, dirt, stone, coal, iron, redstone<br>Pickaxes - wood, stone, iron", 1);
             return;
         }
 
         if (firstcommand.includes("automine")) {
-            if (exp < 10000 * explevel) {
-                addtext("Not enough XP to automine!");
+            if (array[index] < 10000 * explevel) {
+                addtext("Not enough XP to automine!", 0);
             } else {
-                addtext("Automining...");
+                addtext("Automining...", 1);
                 automine();
             }
             return;
         }
 
         if (firstcommand.includes("export")) {
-            addtext(array.toString());
+            addtext(array.toString(), 1);
             return;
         }
     }
@@ -372,20 +438,39 @@
         let NOT = 0;
         setInterval(() => {
             if (NOT % 2) {
-                console.log("/");
+                addtext("/", 1);
             } else {
-                console.log("\\");
+                addtext("\\", 1);
             }
             if (NOT == 10) {
-                getdata("collect");
+                rungame("collect");
                 NOT = 0;
             }
             NOT ++;
         }, 1000);
     }
 
-    function addtext(text) {
-        document.getElementById("1").innerHTML = text;
+    function addtext(text, clear) {
+        if (clear == 0) {
+            pgraph[3] = pgraph[2];
+            pgraph[2] = pgraph[1];
+            pgraph[1] = pgraph[0];
+            pgraph[0] = text;
+        } else {
+            pgraph = new Array();
+            pgraph[0] = text;
+        }
+        if (pgraph[1] === undefined) {
+            pgraph[1] = "";
+        }
+        if (pgraph[2] === undefined) {
+            pgraph[2] = "";
+        }
+        if (pgraph[3] === undefined) {
+            pgraph[3] = "";
+        }
+
+        document.getElementById("1").innerHTML = (pgraph[0] + "<br><br>" + pgraph[1] + "<br><br>" + pgraph[2] + "<br><br>" + pgraph[3]);
         document.getElementById("txt2").value = "";
     }
     </script>
