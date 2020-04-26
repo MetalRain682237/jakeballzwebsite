@@ -48,14 +48,12 @@
             }
         </style>
         <div style="text-align: center;">
-            <input style="font-size:small; text-align: center;" type="text" id="txt1" name="data" placeholder="Enter data from previous sessions if you have any." size="50">
-            <input style="font-size:small; text-align: center; display: none; margin-left: auto; margin-right: auto;" type="text" id="txt2" name="data" placeholder='Enter command such as "help"' size="50">
+            <input style="font-size:small; text-align: center; margin-left: auto; margin-right: auto;" type="text" id="txt1" name="data" placeholder="Enter data from previous sessions if you have any." size="50">
         </div><br>
         <div style="text-align: center;" class="btngroup">
             <button class="button button1" onclick="enterdata()" id="btn1" style="display: block; margin-left: auto; margin-right: auto;">Enter Data</button>
-            <button class="button button2" onclick="runcmd()" id="btn2" style="display: none; margin-left: auto; margin-right: auto;">Enter Command</button>
         </div>
-        <p id="1" style="color:black;font-size:25px;text-align:left; padding-left: 20%; padding-right: 20%;">This is a fairly simple game I have been working on. I know it is annoying to have to save your data somewhere, but since my website host cannot use a database, this is what I have to do. Obviously you can cheat, but I think it is more fun not to. Contact me on Discord to report bugs and/or if you have ideas for this or a brand new HTML game.</p>
+        <p id="1" style="color:black;font-size:25px;text-align:left; padding-left: 20%; padding-right: 20%;">This is a fairly simple game I have been working on. I know it is annoying to have to save your data somewhere, but since my website host cannot use a database, this is what I have to do. Obviously you can cheat, but I think it is more fun not to. Contact me on Discord to report bugs and/or if you have ideas for this or a brand new HTML game.<br><br> Hint: Mainly helps at the beginning, but you can collect every 2.5 seconds and will get a block. This is because I always round up the blocks you get.</p>
     </body>
     <script>
 
@@ -67,28 +65,22 @@
         }
         });
 
-        var input = document.getElementById("txt2");
-        input.addEventListener("keyup", function(event) {
-        if (event.keyCode === 13) {
-        event.preventDefault();
-        document.getElementById("btn2").click();
-        }
-        });
-
+        var inID;
         var array = ["wood", "none", 0, 0, 0, 1, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 25, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         var pgraph = new Array();
 
         function enterdata() {
+            console.log("here");
             let message = (document.getElementById("txt1").value).split(',');
-            document.getElementById("txt1").style.display = "none";
-            document.getElementById("btn1").style.display = "none";
-            document.getElementById("txt2").style.display = "block";
-            document.getElementById("btn2").style.display = "block";
+            document.getElementById("txt1").placeholder = 'Enter command such as "help"';
+            document.getElementById("txt1").value = "";
+            document.getElementById("btn1").innerText = "Enter Command";
+            document.getElementById("btn1").onclick = runcmd;
             getdata(message);
         }
 
         function runcmd() {
-            let message = document.getElementById("txt2").value;
+            let message = document.getElementById("txt1").value;
             rungame(message);
         }
 
@@ -291,11 +283,21 @@
             let maxtime = Math.round(durability * pickaxelevel * 100);
             if (timedif > maxtime) { //if more than the durability is passed
                 timedif = maxtime;
+            } else if (timedif < 2.5) {
+                timedif = 0;
+                addtext("You can't spam this command!", 0);
+                return;
             }
 
             let blockhardness = (hardness - (strength * (pickaxelevel / 10)));
             if (blockhardness < 0.0000000001) {
                 blockhardness = 0.0000000001;
+            }
+
+            if (blockarray[number] == 0) {
+                addtext("You were given 50 bonus blocks of " + mining + "!", 0);
+                array[index] += Math.ceil(50 * blockexp);
+                array[(19 + number)] += 50;
             }
 
             let blockspeed = ((armlevel / 10) / blockhardness);
@@ -432,11 +434,15 @@
             addtext(array.toString(), 1);
             return;
         }
+
+        if (firstcommand.includes("stop")) {
+            clearInterval(inID);
+        }
     }
 
     function automine() {
         let NOT = 0;
-        setInterval(() => {
+       inID = setInterval(() => {
             if (NOT % 2) {
                 addtext("/", 1);
             } else {
@@ -471,7 +477,7 @@
         }
 
         document.getElementById("1").innerHTML = (pgraph[0] + "<br><br>" + pgraph[1] + "<br><br>" + pgraph[2] + "<br><br>" + pgraph[3]);
-        document.getElementById("txt2").value = "";
+        document.getElementById("txt1").value = "";
     }
     </script>
 </html>
