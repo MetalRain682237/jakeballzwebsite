@@ -477,6 +477,9 @@
             const input = document.getElementById("txt1");
             input.focus();
             input.select();
+            input.setSelectionRange(0, 99999); /*For mobile devices*/
+            document.execCommand("copy");
+            alert("Copied your data to clipboard!");
             return;
         }
 
