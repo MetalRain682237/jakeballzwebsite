@@ -415,7 +415,7 @@
             let rate = (((Math.round((1 / blockspeed) * 100)) / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
             let maxtime = (Math.round(durability * pickaxelevel * 100)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             let maxmin = (Math.round((durability * pickaxelevel * 100) / 60)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            addtext("Total Experience: " + te + "<br>Total Blocks Mined:  " + tmb + "<br>Arm Level: " + armlevel + "<br>Total XP For Next Arm Level: " + nal + "<br>Current Exp: " + xp + "<br>Pickaxe Type: " + pickaxetype + "<br>Pickaxe Level: " + pickaxelevel + "<br>XP For Next Pickaxe Level: " + npl + "<br>Block Being Mined: " + mining + "<br>Mining Speed: 1 / " + rate + " seconds<br>Max Away Time: " + maxtime + " seconds (" + maxmin + " minutes)<br><br>Blocks Mined:<br><br>Sand: " + (sand.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Dirt: " + (dirt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Stone: " + (stone.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Coal: " + (coal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Iron: " + (iron.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Redstone: " + (redstone.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Emerald: " + (emerald.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Diamond: " + (diamond.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Bedrock: " + (bedrock.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")), 0);
+            addtext("Total Experience: " + te + "<br>Total Blocks Mined:  " + tmb + "<br>Arm Level: " + armlevel + "<br>Total XP For Next Arm Level: " + nal + "<br>Current Exp: " + xp + "<br>Pickaxe Type: " + pickaxetype + "<br>Pickaxe Level: " + pickaxelevel + "<br>XP For Next Pickaxe Level: " + npl + "<br>Block Being Mined: " + mining + "<br>Mining Speed: 1 / " + rate + " seconds<br>Max Away Time: " + maxtime + " seconds (" + maxmin + " minutes)<br><br>Blocks Mined:<br><br>Wood: " + (wood.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Mythwood: " + (mythwood.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Sand: " + (sand.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Dirt: " + (dirt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Stone: " + (stone.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Coal: " + (coal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Iron: " + (iron.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Redstone: " + (redstone.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Emerald: " + (emerald.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Diamond: " + (diamond.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + "<br>Bedrock: " + (bedrock.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")), 0);
             return;
         }
 
@@ -446,13 +446,35 @@
         if ((firstcommand.includes("pick")) && (secondcommand !== undefined)) { //if you want to change your pickaxe type
             if (picks[secondcommand] === undefined) {
                 addtext("Not a valid pickaxe!", 1);
-            } else if (picks[secondcommand].pickexp > totalexp) {
-                addtext("You do not have enough total XP to use the " + secondcommand + " pickaxe!", 1);
             } else {
-                addtext("Now using the " + secondcommand + " pickaxe!", 1);
-                array[6] = secondcommand;
-                array[17] = 1;
-                array[18] = 25;
+                let {strength, durability, explevel, index, pickreq} = picks[secondcommand];
+                let usable = false;
+
+                if (array[index] == 0) {
+                    if (pickreq.length > 2) {
+                        if ((array[(19 + (blocks[(pickreq[1])].number))] >= (pickreq[0])) && (array[(19 + (blocks[(pickreq[3])].number))] >= (pickreq[2]))) {
+                            usable = true;
+                            array[(19 + (blocks[(pickreq[1])].number))] -= (pickreq[0]);
+                            array[(19 + (blocks[(pickreq[3])].number))] -= (pickreq[2]);
+                        }
+                    } else {
+                        if (array[(19 + (blocks[(pickreq[1])].number))] >= (pickreq[0])) {
+                            usable = true;
+                            array[(19 + (blocks[(pickreq[1])].number))] -= (pickreq[0]);
+                        }
+                    }
+                } else {
+                    usable = true;
+                }
+
+                if (usable == true) {
+                    addtext("Now using the " + secondcommand + " pickaxe!", 1);
+                    array[0] = secondcommand;
+                    array[17] = 1;
+                    array[18] = 25;
+                } else {
+                    addtext("Not enough blocks to use the " + secondcommand + " pickaxe!", 1);
+                }
             }
             return;
         }
