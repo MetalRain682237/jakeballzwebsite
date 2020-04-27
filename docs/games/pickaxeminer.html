@@ -473,7 +473,10 @@
         }
 
         if (firstcommand.includes("export")) {
-            addtext(array.toString(), 1);
+            document.getElementById("txt1").value = (array.toString());
+            const input = document.getElementById("txt1");
+            input.focus();
+            input.select();
             return;
         }
 
