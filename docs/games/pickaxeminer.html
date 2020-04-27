@@ -48,7 +48,7 @@
             }
         </style>
         <div style="text-align: center;">
-            <input style="font-size:small; text-align: center; margin-left: auto; margin-right: auto;" type="text" id="txt1" name="data" placeholder="Enter data from previous sessions if you have any." size="50">
+            <input style="font-size:medium; text-align: center; margin-left: auto; margin-right: auto;" type="text" id="txt1" name="data" placeholder="Enter data from previous sessions, if you have any." size="50">
         </div><br>
         <div style="text-align: center;" class="btngroup">
             <button class="button button1" onclick="enterdata()" id="btn1" style="display: block; margin-left: auto; margin-right: auto;">Enter Data</button>
@@ -60,9 +60,23 @@
         var input = document.getElementById("txt1");
         input.addEventListener("keyup", function(event) {
         if (event.keyCode === 13) {
-        event.preventDefault();
-        document.getElementById("btn1").click();
+            event.preventDefault();
+            document.getElementById("btn1").click();
         }
+        });
+
+        var inputBox = document.getElementById("txt1");
+        inputBox.addEventListener("keyup", function(inputevent) {
+            inputevent.preventDefault();
+            let string = document.getElementById("txt1").value.toLowerCase();
+            let arr = string.split(" ");
+            if ((document.getElementById("btn1")).innerText == "Enter Command") {
+                if ((string.length > 0)) {
+                    checktext(arr[0]);
+                } else {
+                    document.getElementById("txt1").style.color = "black";
+                }
+            }
         });
 
         var inID;
@@ -70,7 +84,6 @@
         var pgraph = new Array();
 
         function enterdata() {
-            console.log("here");
             let message = (document.getElementById("txt1").value).split(',');
             document.getElementById("txt1").placeholder = 'Enter command such as "help"';
             document.getElementById("txt1").value = "";
@@ -199,7 +212,7 @@
                 "hardness": 100,
                 "blockexp": 12.5,
                 "number": 2,
-                "req": [0, "wood"]
+                "req": [100000, "wood"]
             },
             "sand": {
                 "hardness": 10,
@@ -237,6 +250,24 @@
                 "blockexp": 25,
                 "number": 8,
                 "req": [250000, "iron", 150000, "coal"]
+            },
+            "emerald": {
+                "hardness": 105,
+                "blockexp": 35,
+                "number": 9,
+                "req": [250000, "redstone", 10000, "mythwood"]
+            },
+            "diamond": {
+                "hardness": 150,
+                "blockexp": 80,
+                "number": 10,
+                "req": [250000, "emerald", 25000, "mythwood"]
+            },
+            "bedrock": {
+                "hardness": 1000,
+                "blockexp": 1000,
+                "number": 11,
+                "req": [250000, "diamond", 150000, "mythwood"]
             }
         }
 
@@ -389,12 +420,23 @@
         }
 
         if ((firstcommand.includes("stat")) && (secondcommand !== undefined)) {
-            if ((thirdcommand.includes("block")) && (blocks[secondcommand] !== undefined)) {
+            if ((thirdcommand !== undefined) && (thirdcommand.includes("block")) && (blocks[secondcommand] !== undefined)) {
                 let {hardness, blockexp, number, req} = blocks[secondcommand]; //set variables equal to the stats of the block being chose
-                addtext((secondcommand.charAt(0).toUpperCase() + secondcommand.slice(1)) + " Block:<br><br>Hardness: " + hardness + "<br>Block XP: " + blockexp + "<br>Required Previous Blocks: " + (req.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")), 0);
-            } else if ((thirdcommand.includes("pick")) && (picks[secondcommand] !== undefined)) {
-                let {strength, durability, explevel, pickexp} = picks[secondcommand]; //same thing for pickaxes
-                addtext((secondcommand.charAt(0).toUpperCase() + secondcommand.slice(1)) + " Pickaxe:<br><br>Strength: " + strength + "<br>Durability: " + durability + "<br>XP Level: " + explevel + "<br>Required XP: " + (pickexp.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")), 0);
+                let requirements;
+                if (req.length > 2) {
+                    requirements = ((req[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + " " + (req[1]) + ", " + (req[2].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + " " + (req[3]));
+                } else {
+                    requirements = ((req[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + " " + (req[1]))
+                }
+                addtext((secondcommand.charAt(0).toUpperCase() + secondcommand.slice(1)) + " Block:<br><br>Hardness: " + hardness + "<br>Block XP: " + blockexp + "<br>Required Blocks: " + requirements, 0);
+            } else if ((thirdcommand !== undefined) && (thirdcommand.includes("pick")) && (picks[secondcommand] !== undefined)) {
+                let {strength, durability, explevel, pickreq} = picks[secondcommand]; //same thing for pickaxes
+                if (pickreq.length > 2) {
+                    requirements = ((pickreq[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + " " + (pickreq[1]) + ", " + (pickreq[2].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + " " + (pickreq[3]));
+                } else {
+                    requirements = ((pickreq[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")) + " " + (pickreq[1]))
+                }
+                addtext((secondcommand.charAt(0).toUpperCase() + secondcommand.slice(1)) + " Pickaxe:<br><br>Strength: " + strength + "<br>Durability: " + durability + "<br>XP Level: " + explevel + "<br>Required blocks: " + requirements, 0);
             } else {
                 addtext("Not a valid type of block or pickaxe!", 1);
             }
@@ -475,9 +517,18 @@
         if (pgraph[3] === undefined) {
             pgraph[3] = "";
         }
-
         document.getElementById("1").innerHTML = (pgraph[0] + "<br><br>" + pgraph[1] + "<br><br>" + pgraph[2] + "<br><br>" + pgraph[3]);
         document.getElementById("txt1").value = "";
+    }
+
+    function checktext(word) {
+        let options = ["h", "he", "hel", "help", "c", "co", "col", "coll", "colle", "collec", "collect", "m", "mi", "min", "mine", "p", "pi", "pic", "pick", "picka", "pickax", "pickaxes", "s", "st", "sta", "stat", "stats", "a", "au", "aut", "auto", "autom", "automi", "automin", "automine", "e", "ex", "exp", "expo", "expor", "export"];
+        let dex = options.indexOf(word);
+        if (dex >= 0) {
+            document.getElementById("txt1").style.color = "green";
+        } else {
+            document.getElementById("txt1").style.color = "red";
+        }
     }
     </script>
 </html>

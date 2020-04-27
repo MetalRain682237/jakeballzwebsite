@@ -5,7 +5,7 @@
         <link rel="shortcut icon" href="DogIcon2.jpg"/>
     </head>
     <body style="background-color:blue;">
-        <h1 style="color:black;font-size:75px;text-align:center">HTML Games</h1>
+        <h1 style="color:black;font-size:75px;text-align:center">HTML Games Update Logs</h1>
         <style>
             .button {
             background-color: rgb(0, 0, 0);
@@ -32,8 +32,18 @@
             .button {border-radius: 4px;}
         </style>
         <div style="text-align: center;" class="btngroup">
-            <a href="pickaxeminer.html"><button class="button button1">Pickaxe Miner</button></a><br>
-            <a href="gamelogs.html"><button class="button button1">Game Update Logs</button></a><br>
+            <button class="button" onclick="btnclicked('pm')">Pickaxe Miner</button>
         </div>
+        <p id="txt1" style="color:black;font-size:25px;text-align:left; padding-left: 20%; padding-right: 20%;"></p>
     </body>
+    <script>
+        function btnclicked(word) {
+            let pm = "4/26/20 Pickaxe Miner:<br>Game released.";
+            let text;
+            if (word == "pm") {
+                text = pm;
+            }
+            document.getElementById("txt1").innerHTML = text; 
+        }
+    </script>
 </html>
