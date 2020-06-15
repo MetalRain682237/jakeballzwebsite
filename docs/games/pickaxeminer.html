@@ -4,11 +4,11 @@
         <title>Jake Ballz</title>
         <link rel="shortcut icon" href="DogIcon2.jpg"/>
     </head>
-    <body style="background-color:blue;">
-        <h1 style="color:black;font-size:75px;text-align:center">Pickaxe Miner</h1>
+    <body style="background-color:black;">
+        <h1 style="color:white;font-size:75px;text-align:center">Pickaxe Miner</h1>
         <style>
             .button {
-            background-color: rgb(0, 0, 0);
+            background-color: rgb(68, 68, 68);
             border: none;
             color: white;
             padding: 8px 16px;
@@ -19,17 +19,13 @@
             margin: 4px 2px;
             transition-duration: 1.25s;
             cursor: pointer;
-            }
-            .button {
-            background-color: white;
-            color: black;
             border: 2px solid #000000;
+            border-radius: 4px;
             }
             .button:hover {
-            background-color: #555555;
+            background-color: red;
             color: white;
             }
-            .button {border-radius: 4px;}
 
             input[type=text] {
             width: 40%;
@@ -47,13 +43,13 @@
             width: 60%;
             }
         </style>
-        <div style="text-align: center;">
+        <div style="text-align: center; color: white;">
             <input style="font-size:medium; text-align: center; margin-left: auto; margin-right: auto;" type="text" id="txt1" name="data" placeholder="Enter data from previous sessions, if you have any." size="50">
         </div><br>
         <div style="text-align: center;" class="btngroup">
             <button class="button button1" onclick="enterdata()" id="btn1" style="display: block; margin-left: auto; margin-right: auto;">Enter Data</button>
         </div>
-        <p id="1" style="color:black;font-size:25px;text-align:left; padding-left: 20%; padding-right: 20%;">This is a fairly simple game I have been working on. I know it is annoying to have to save your data somewhere, but since my website host cannot use a database, this is what I have to do. Obviously you can cheat, but I think it is more fun not to. Contact me on Discord to report bugs and/or if you have ideas for this or a brand new HTML game.<br><br> Hint: Mainly helps at the beginning, but you can collect every 2.5 seconds and will get a block. This is because I always round up the blocks you get.</p>
+        <p id="1" style="color:white;font-size:25px;text-align:left; padding-left: 20%; padding-right: 20%;">This is a fairly simple game I have been working on. I know it is annoying to have to save your data somewhere, but since my website host cannot use a database, this is what I have to do. Obviously you can cheat, but I think it is more fun not to. Contact me on Discord to report bugs and/or if you have ideas for this or a brand new HTML game.<br><br> Hint: Mainly helps at the beginning, but you can collect every 2.5 seconds and will get a block. This is because I always round up the blocks you get.</p>
     </body>
     <script>
 
@@ -74,7 +70,7 @@
                 if ((string.length > 0)) {
                     checktext(arr[0]);
                 } else {
-                    document.getElementById("txt1").style.color = "black";
+                    document.getElementById("txt1").style.color = "white";
                 }
             }
         });
