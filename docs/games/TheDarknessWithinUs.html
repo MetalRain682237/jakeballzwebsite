@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+
+<head>
+    <title id="title">The Darkness Within Us</title>
+</head>
+
+<body id="body" style="background-color:black;" onload="pageload()">
+    <h1 style="color:white;font-size:50px;text-align:center">The Darkness Within Us</h1>
+    <style>
+        .button {
+            background-color: rgb(68, 68, 68);
+            border: none;
+            color: white;
+            padding: 16px 56px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 28px;
+            margin: 4px 2px;
+            transition-duration: 1.25s;
+            cursor: pointer;
+            border-radius: 4px;
+            border-color: white;
+        }
+
+        .button:hover {
+            background-color: white;
+            color: black;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline;
+            border-bottom: none;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: black;
+            columns: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: black transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        select {
+            align-self: center;
+            text-align: center;
+            position: relative;
+            display: block;
+            margin: 0 auto;
+            color: black;
+            background-color: white;
+            width: 150px;
+            height: 25px;
+        }
+
+        .select-selected {
+            background-color: black;
+        }
+
+        .select-items div,
+        .select-selected {
+            color: black;
+            cursor: pointer;
+        }
+
+        .select:active,
+        .select:hover {
+            outline: none;
+        }
+
+        select:active,
+        select:checked {
+            outline-color: "rgb(128,128,128)";
+            color: "rgb(128,128,128)";
+        }
+    </style>
+    <div id="main" style="color: white;padding-left: 2.5%;padding-right: 2.5%;display: none;">
+        <p id="day" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Day: 0</p>
+        <p id="time" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Time: 00:00</p>
+        <p id="pop" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Population: 1/1</p><br>
+
+        <p id="untasked" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Untasked: 1</p>
+        <p id="hunters" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Hunters: 0 </p>
+        <p id="lj" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Lumberjacks: 0 </p>
+        <p id="trappers" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Trappers: 0 </p><br>
+
+        <p id="meat" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Meat: 5</p>
+        <p id="fur" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Fur: 0</p>
+        <p id="wood" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Wood: 10</p>
+    </div>
+    <p id="mainp" style="color: white;font-size:40px;text-align:center;margin-top: 0%;display: none;">The year is
+        2056...</p>
+    <div id="btns" style="text-align: center;color: white;" class="btngroup">
+        <button id="btn1" class="button" onclick="dialoguecmd(0)">New Game</button>
+        <button id="btn2" class="button" onclick="dialoguecmd(-1)">Load Game</button>
+    </div>
+    
+    <div style="text-align: center; color: white;">
+        <input style="font-size:medium; text-align: center; margin-left: auto; margin-right: auto; display: none;" type="text" id="txt1" name="data" placeholder="Enter data from TDWU text file" size="50">
+    </div>
+    <div id="enterbtngroup" style="text-align: center; display: none;" class="btngroup">
+        <button id="enterbtn" class="button" onclick="dialoguecmd(-2)">Enter</button>
+    </div>
+    <div id="taskbtns" style="display: none;text-align: center;" class="select" onchange="selectchange(this.value)">
+        <select id="selectionbox">
+            <option value="0">Select:</option>
+            <option value="1">Hunter</option>
+            <option value="2">Lumberjack</option>
+            <option value="3">Trapper</option>
+        </select><br>
+        <button id="add" class="button" onclick="tasks(1)">+</button>
+        <button id="sub" class="button" onclick="tasks(0)">-</button>
+    </div>
+    <div id="otherbtns" style="display: none;text-align: center;" class="btngroup">
+        <button id="save" class="button" onclick="savegame()">Other</button>
+    </div>
+    <div id="settingsbtns" style="display: none;text-align: center;" class="btngroup">
+        <button id="save" class="button" onclick="savegame()">Save</button>
+    </div>
+    <div id="leftright" style="display: none;text-align: center;" class="btngroup">
+        <button id="left" class="button" onclick="LR(0)">&lt;</button>
+        <button id="right" class="button" onclick="LR(1)">&gt;</button>
+    </div>
+    <p id="info" style="text-align: center;color: white;"></p>
+    <div id="decide" style="display: none;text-align: center;color: white;" class="btngroup">
+        <button id="d1" class="button" onclick="eventbuttonclick(0)">Decision 1</button>
+        <button id="d2" class="button" onclick="eventbuttonclick(1)">Decision 2</button>
+        <button id="d3" class="button" onclick="eventbuttonclick(2)">Decision 3</button>
+    </div>
+    <a id="downloadAnchorElem" style="display:none"></a>
+    <script>
+        //let begindialogue = ["The year is 2056...", "It has been 20 years since the UCD-41 virus outbreak...", "Everyone must fight for their own lives...", "No place is safe..."];
+        let begindialogue = ["Intro..."];
+        //let interval = [2500, 5000, 4000, 3000];
+        var data = { //json object where all data will be stored so we can easily save/load it
+            "badgood": 128,
+            "time": 384,
+            "day": 0, //peoples
+            "population": 1,
+            "maxpop": 1,
+            "untasked": 1,
+            "hunters": 0,
+            "lumberjacks": 0,
+            "trappers": 0, //resources
+            "meat": 5,
+            "fur": 0,
+            "wood": 10
+        }
+        let interval = [10];
+        let intimer;
+        let currentevent;
+        let eventnum;
+        let actionbtn;
+
+        //elements
+        let title = document.getElementById("title");
+        let bodyele = document.getElementById("body");
+        let mainele = document.getElementById("main");
+        let mainp = document.getElementById("mainp");
+        let daytxt = document.getElementById("day");
+        let timetxt = document.getElementById("time");
+        let taskbtns = document.getElementById("taskbtns");
+        let otherbtns = document.getElementById("otherbtns");
+        let settingsbtns = document.getElementById("settingsbtns");
+        let lrbtns = document.getElementById("leftright");
+        let poptxt = document.getElementById("pop");
+        let infotxt = document.getElementById("info");
+        let selectionbox = document.getElementById("selectionbox");
+        let decidebtns = document.getElementById("decide");
+        let dbtn1 = document.getElementById("d1");
+        let dbtn2 = document.getElementById("d2");
+        let dbtn3 = document.getElementById("d3");
+
+        //resources elements
+        let meattxt = document.getElementById("meat");
+        let furtxt = document.getElementById("fur");
+        let woodtxt = document.getElementById("wood");
+
+        //people elements
+        let untaskedtxt = document.getElementById("untasked");
+        let hunterstxt = document.getElementById("hunters");
+        let ljtxt = document.getElementById("lj");
+        let trapperstxt = document.getElementById("trappers");
+
+        //define people's tasks
+        const peopletasks = {
+            "0": {
+                "name": "select",
+                "info": "Select a task",
+                "task": "0+0"
+            },
+            "1": {
+                "name": "hunter",
+                "info": "Hunter<br><br>+3 meat",
+                "task": "0+3"
+            },
+            "2": {
+                "name": "lumberjack",
+                "info": "Lumberjack<br><br>+2 wood<br>",
+                "task": "2+2"
+            },
+            "3": {
+                "name": "trapper",
+                "info": "Trapper<br><br>+2 fur<br>-1 meat",
+                "task": "1+2,0-1"
+            }
+        }
+
+        //define base events
+        let BEnum = 1;
+        const BE = {
+            "0": {
+                "title": "A man comes to your village, he is looking weary...",
+                "type": "people",
+                "amount": 1,
+                "btn1": "Let him join",
+                "btn2": "Turn him away",
+                "btn3": "Kill him",
+                "c1": "You let the man join your village, he can work on your village...",
+                "c2": "You turned the man away and never saw him again...",
+                "c3": "You killed the man in cold blood, hopefully this won't haunt you..."
+            }, 
+            "1": {
+                "title": "A group of 5 people come to your village looking for refuge...",
+                "type": "people",
+                "amount": 5,
+                "btn1": "Let them join",
+                "btn2": "Turn them away",
+                "btn3": "Kill them all",
+                "c1": "You let the group of people join your village, they can work on your village...",
+                "c2": "You turned the group away and never saw them again...",
+                "c3": "You killed the whole group of people in cold blood, hopefully this won't haunt you..."
+            },
+            "2": {
+                "title": "A mother and her daughter stumble across your village, they are looking tired...",
+                "type": "people",
+                "amount": 2,
+                "btn1": "Let them join",
+                "btn2": "Turn them away",
+                "btn3": "Kill them both",
+                "c1": "You welcome the mother and daughter into your village, they can work on your village...",
+                "c2": "You turned the mother and daughter away and never saw them again...",
+                "c3": "You slaughtered the mother and daughter where they stood..."
+            }
+        }
+
+        function pageload() { //called when the page loads
+        
+        }
+
+        function dialoguecmd(num) { //begining dialogue
+            let btns = document.getElementById("btns");
+            let enterbtngroup = document.getElementById("enterbtngroup");
+            let txt1 = document.getElementById("txt1");
+
+            if (num == -2) { //enter button pressed
+                num = 1;
+                data = JSON.parse(txt1.value);
+                mainp.style.display = "block";
+                enterbtngroup.style.display = "none";
+                txt1.style.display = "none";
+                updateUI();
+            }
+            if (num == -1) { //load button pressed
+                btns.parentNode.removeChild(btns);
+                enterbtngroup.style.display = "block";
+                txt1.style.display = "block";
+                return;
+            }
+            if (num == 0) {
+                btns.parentNode.removeChild(btns);
+                mainp.style.display = "block";
+            }
+            if (num < begindialogue.length) {
+                mainp.innerHTML = begindialogue[num];
+                mainp.style.color = "rgb(255,255,255)";
+                setTimeout(() => {
+                    fadeelement("mainp", num);
+                }, interval[num]);
+            } else {
+                mainp.style.color = ("rgb(128,128,128)");
+                mainp.innerHTML = "";
+                showactions();
+                mainele.style.display = "block";
+                internalclock(); //start up internal clock
+
+                let i = 0;
+                let bgtimer = setInterval(() => {
+                    bodyele.style.backgroundColor = ("rgb(" + i + "," + i + "," + i + ")");
+                    if (i >= 128) {
+                        clearInterval(bgtimer);
+                    } else {
+                        i++;
+                    }
+                }, 30);
+            }
+        }
+
+        function fadeelement(ele, num) { //fading beginning text
+            let element = document.getElementById(ele);
+            let i = 255;
+            let timer = setInterval(() => {
+                element.style.color = "rgb(" + (i) + "," + (i) + "," + (i) + ")";
+                i--;
+            }, 15);
+            setTimeout(() => {
+                clearInterval(timer);
+                dialoguecmd((num + 1));
+            }, (15 * 255));
+        }
+
+        function internalclock() { //runs all the time elements
+            intimer = setInterval(() => {
+                let oldday = data.day;
+                data.time++;
+                data.day = (Math.floor(data.time / 384));
+                let daytime = (data.time - (data.day * 384));
+                let hours = Math.floor(daytime / 16);
+                daytime -= (hours * 16);
+                let minutes = ((Math.floor(daytime / 4) * 15));
+                if (hours.toString().length == 1) {
+                    hours = ("0" + hours);
+                }
+                if (minutes == 0) {
+                    minutes = "00";
+                }
+                timetxt.innerHTML = ("Time: " + hours + ":" + minutes);
+                if ((data.day > oldday) && (data.day != 1)) {
+                    newday();
+                }
+            }, 50);
+        }
+
+        function newday() { //called every time a new day begins
+            daytxt.innerHTML = ("Day: " + (data.day - 1));
+
+            //caclulate resources
+            data.meat -= data.population;
+            data.meat -= data.trappers;
+            data.meat += (data.hunters * 3);
+            data.wood += (data.lumberjacks * 2);
+
+            alert("End of day " + (data.day - 1));
+            updateUI();
+            
+            let rng = (Math.random() * 100);
+            if (rng > 0) { //percent chance to get an event
+                clearInterval(intimer);
+                newevent();
+            }
+        }
+
+        function setbackground(color) { //set background color
+            bodyele.style.backgroundColor = ("rgb(" + color + "," + color + "," + color + ")");
+            if (color >= 128) { //make sure text is readable
+                title.style.color = ("rgb(255,255,255)");
+                mainele.style.color = ("rgb(255,255,255)");
+                mainp.style.color = ("rgb(255,255,255)");
+                infotxt.style.color = ("rgb(255,255,255)");
+            } else {
+                title.style.color = ("rgb(0,0,0)");
+                mainele.style.color = ("rgb(0,0,0)");
+                mainp.style.color = ("rgb(0,0,0)");
+                infotxt.style.color = ("rgb(0,0,0)");
+            }
+        }
+
+        function selectchange(value) { //when selection box is changed
+            infotxt.innerHTML = peopletasks[selectionbox.value].info; //set info paragraph to whatever is selected
+        }
+
+        function tasks(num) { //when a task is being added or subtracted
+            let person = selectionbox.value;
+            if (num == 1) { //add person from task
+                if ((data.untasked > 0) && (person != 0)) {
+                    if (person == 1) {
+                        data.hunters++;
+                    } else if (person == 2) {
+                        data.lumberjacks++;
+                    }
+                    data.untasked--;
+                    updateUI();
+                } else {
+                    alert("No untasked people available!");
+                }
+            } else { //subtract person from task
+                if ((person == 1) && (data.hunters > 0)) {
+                    data.hunters--;
+                    data.untasked++;
+                    updateUI();
+                    return;
+                } else if ((person == 2) && (data.lumberjacks > 0)) {
+                    data.lumberjacks--;
+                    data.untasked++;
+                    updateUI();
+                    return;
+                }
+            }
+        }
+
+        function updateUI() {
+            daytxt.innerHTML = ("Day: " + (data.day - 1));
+
+            //resources
+            meattxt.innerHTML = ("Meat: " + data.meat);
+            furtxt.innerHTML = ("Fur: " + data.fur);
+            woodtxt.innerHTML = ("Wood: " + data.wood);
+
+            //people
+            untaskedtxt.innerHTML = ("Untasked: " + data.untasked);
+            hunterstxt.innerHTML = ("Hunters: " + data.hunters);
+            ljtxt.innerHTML = ("Lumberjacks: " + data.lumberjacks);
+            trapperstxt.innerHTML = ("Trappers: " + data.trappers);
+        }
+
+        function newevent() { //if there is an event that is gonna happen
+            let eventtype = Math.round(Math.random() * 2); //what event type
+            eventtype = 0;
+            currentevent = eventtype;
+
+            decidebtns.style.display = "block";
+            hideactions();
+
+            if (eventtype == 0) {
+                eventnum = Math.round(Math.random() * BEnum);
+                pevent(eventnum);
+            }
+        }
+
+        function pevent(num) { //person event
+            mainp.innerHTML = BE[num].title
+            mainp.style.color = "rgb(0,0,0)";
+            dbtn1.innerHTML = BE[num].btn1;
+            dbtn2.innerHTML = BE[num].btn2;
+            dbtn3.innerHTML = BE[num].btn3;
+        }
+
+        function eventbuttonclick(btn) {
+            decidebtns.style.display = "none";
+            if (btn == 0) { //left button chose
+                data.badgood += BE[eventnum].amount;
+                if (currentevent == 0) { //if the event was a "people" event
+                    data.population += BE[eventnum].amount;
+                    data.untasked += BE[eventnum].amount;
+                }
+                mainp.innerHTML = BE[eventnum].c1;
+                setTimeout(() => {
+                    changelight();
+                }, 2500);
+            } else if (btn == 1) { //middle button chose
+                if (currentevent == 0) { //if the event was a "people" event
+                    //nothing special here
+                }
+                mainp.innerHTML = BE[eventnum].c2;
+                setTimeout(() => {
+                    mainp.style.display = "none";
+                    showactions();
+                    internalclock();
+                }, 2500);
+            } else if (btn == 2) { //right button chose
+                if (currentevent == 0) { //if the event was a "people" event
+                    //nothing special here
+                }
+                data.badgood -= BE[eventnum].amount;
+                mainp.innerHTML = BE[eventnum].c3;
+                setTimeout(() => {
+                    changedark();
+                }, 2500);
+            }
+            if (data.population > data.maxpop) { //if we added more then the amount of people we can hold
+                let minus = data.population - data.maxpop;
+                data.population = data.maxpop;
+                data.untasked -= minus;
+            }
+            updateUI();
+        }
+
+        function changedark() { //change background dark
+            let color = data.badgood;
+            let timer = setInterval(() => {
+                bodyele.style.backgroundColor = ("rgb(" + color + "," + color + "," + color + ")");
+                color--;
+                if (color == 0) {
+                    clearInterval(timer);
+                    changenormal(0);
+                }
+            }, 25);
+        }
+
+        function changelight() { //change background light
+            let color = data.badgood;
+            let timer = setInterval(() => {
+                bodyele.style.backgroundColor = ("rgb(" + color + "," + color + "," + color + ")");
+                color++;
+                if (color == 255) {
+                    clearInterval(timer);
+                    changenormal(1);
+                }
+            }, 25);
+        }
+
+        function changenormal(bg) { //change background to badgood value
+            let color;
+            if (bg == 0) {
+                color = 0;
+            } else {
+                color = 255;
+            }
+            let timer = setInterval(() => {
+                bodyele.style.backgroundColor = ("rgb(" + color + "," + color + "," + color + ")");
+                if (color == data.badgood) {
+                    clearInterval(timer);
+                    mainp.style.display = "none";
+                    taskbtns.style.display = "block";
+                    lrbtns.style.display = "block";
+                    internalclock();
+                }
+                if (bg == 0) {
+                    color++;
+                } else {
+                    color--;
+                }
+            }, 25);
+        }
+
+        function savegame() { //downloads a text file for the user
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+            var dlAnchorElem = document.getElementById('downloadAnchorElem');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "TDWU.txt");
+            dlAnchorElem.click();
+        }
+
+        function LR(num) {
+            if (num == 0) { //going left
+                if (taskbtns.style.display == "block") {
+                    taskbtns.style.display = "none";
+                    settingsbtns.style.display = "block";
+                } else if (otherbtns.style.display == "block") {
+                    otherbtns.style.display = "none";
+                    taskbtns.style.display = "block";
+                } else {
+                    settingsbtns.style.display = "none";
+                    otherbtns.style.display = "block";
+                }
+            } else { //going right
+                if (taskbtns.style.display == "block") {
+                    taskbtns.style.display = "none";
+                    otherbtns.style.display = "block";
+                } else if (otherbtns.style.display == "block") {
+                    otherbtns.style.display = "none";
+                    settingsbtns.style.display = "block";
+                } else {
+                    settingsbtns.style.display = "none";
+                    taskbtns.style.display = "block";
+                }
+            }
+        }
+
+        function hideactions() { //hide action buttons
+            if (taskbtns.style.display == "block") {
+                taskbtns.style.display = "none";
+                actionbtn = "taskbtns";
+            } else if (otherbtns.style.display == "block") {
+                otherbtns.style.display = "none";
+                actionbtn = "otherbtns";
+            } else {
+                settingsbtns.style.display = "none";
+                actionbtn = "settingsbtns";
+            }
+            lrbtns.style.display = "none";
+        }
+
+        function showactions() { //show action buttons
+            if (actionbtn == "taskbtns") {
+                taskbtns.style.display = "block";
+            } else if (actionbtn == "optionsbtns") {
+                otherbtns.style.display = "block";
+            } else {
+                settingsbtns.style.display = "block";
+            }
+            lrbtns.style.display = "block";
+        }
+
+    </script>
+</body>

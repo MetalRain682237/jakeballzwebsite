@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<head>
+    <title>The Darkness Within Us</title>
+</head>
+<body id="body" style="background-color:black;" onload="startup()">
+    <h1 id="head" style="color:white;font-size:100px;text-align:center">The Darkness Within Us</h1>
+        <style>
+            .button {
+            background-color: rgb(68, 68, 68);
+            border: none;
+            color: white;
+            padding: 16px 56px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 28px;
+            margin: 4px 2px;
+            transition-duration: 1.25s;
+            cursor: pointer;
+            border-radius: 4px;
+            border-color: white;
+            }
+            .button:hover {
+            background-color: white;
+            color: black;
+            }
+        </style>
+        <div style="text-align: center;" class="btngroup">
+            <a id="btn" href="TheDarknessWithinUs.html"><button class="button">Start</button></a><br>
+        </div>
+        <script>
+            let body = document.getElementById("body");
+            let head = document.getElementById("head");
+            let color = 0;
+            let hcolor = 255;
+            let up = true;
+
+            function startup() {
+                setInterval(() => {
+                    if (color == 255) {
+                        up = false;
+                    } else if (color == 0) {
+                        up = true;
+                    }
+                    if (up == true) {
+                        color ++;
+                        hcolor --;
+                    } else {
+                        color --;
+                        hcolor ++;
+                    }
+                    body.style.backgroundColor = ("rgb(" + color + "," + color + "," + color + ")");
+                    head.style.color = ("rgb(" + hcolor + "," + hcolor + "," + hcolor + ")");
+                }, 25);
+            }
+        </script>
+</body>
