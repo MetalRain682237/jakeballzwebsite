@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 
 <head>
-    <title id="title">The Darkness Within Us</title>
+    <title>The Darkness Within Us</title>
 </head>
 
 <body id="body" style="background-color:black;" onload="pageload()">
-    <h1 style="color:white;font-size:50px;text-align:center">The Darkness Within Us</h1>
+    <h1 id="title" style="color:white;font-size:50px;text-align:center">The Darkness Within Us</h1>
     <style>
         .button {
             background-color: rgb(68, 68, 68);
@@ -103,7 +103,7 @@
     <div id="main" style="color: white;padding-left: 2.5%;padding-right: 2.5%;display: none;">
         <p id="day" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Day: 0</p>
         <p id="time" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Time: 00:00</p>
-        <p id="pop" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Population: 1/1</p><br>
+        <p id="pop" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Population: 1/5</p><br>
 
         <p id="untasked" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Untasked: 1</p>
         <p id="hunters" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Hunters: 0 </p>
@@ -113,7 +113,7 @@
         <p id="meat" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Meat: 5</p>
         <p id="fur" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Fur: 0</p>
         <p id="wood" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Wood: 10</p>
-    </div>
+    </div><br>
     <p id="mainp" style="color: white;font-size:40px;text-align:center;margin-top: 0%;display: none;">The year is
         2056...</p>
     <div id="btns" style="text-align: center;color: white;" class="btngroup">
@@ -127,18 +127,19 @@
     <div id="enterbtngroup" style="text-align: center; display: none;" class="btngroup">
         <button id="enterbtn" class="button" onclick="dialoguecmd(-2)">Enter</button>
     </div>
-    <div id="taskbtns" style="display: none;text-align: center;" class="select" onchange="selectchange(this.value)">
+    <div id="taskbtns" style="display: none;text-align: center;color: white;" class="select" onchange="selectchange(this.value)">
         <select id="selectionbox">
             <option value="0">Select:</option>
             <option value="1">Hunter</option>
             <option value="2">Lumberjack</option>
             <option value="3">Trapper</option>
-        </select><br>
+        </select>
+        <p id="info" style="text-align: center;color: white;"></p><br>
         <button id="add" class="button" onclick="tasks(1)">+</button>
         <button id="sub" class="button" onclick="tasks(0)">-</button>
     </div>
     <div id="otherbtns" style="display: none;text-align: center;" class="btngroup">
-        <button id="save" class="button" onclick="savegame()">Other</button>
+        <button id="buildbuildingbtn" class="button" onclick="buyhut()">Build Hut</button>
     </div>
     <div id="settingsbtns" style="display: none;text-align: center;" class="btngroup">
         <button id="save" class="button" onclick="savegame()">Save</button>
@@ -147,7 +148,6 @@
         <button id="left" class="button" onclick="LR(0)">&lt;</button>
         <button id="right" class="button" onclick="LR(1)">&gt;</button>
     </div>
-    <p id="info" style="text-align: center;color: white;"></p>
     <div id="decide" style="display: none;text-align: center;color: white;" class="btngroup">
         <button id="d1" class="button" onclick="eventbuttonclick(0)">Decision 1</button>
         <button id="d2" class="button" onclick="eventbuttonclick(1)">Decision 2</button>
@@ -155,28 +155,35 @@
     </div>
     <a id="downloadAnchorElem" style="display:none"></a>
     <script>
+        //arrays
         //let begindialogue = ["The year is 2056...", "It has been 20 years since the UCD-41 virus outbreak...", "Everyone must fight for their own lives...", "No place is safe..."];
         let begindialogue = ["Intro..."];
         //let interval = [2500, 5000, 4000, 3000];
+        let buildingnames = ["Dirt Hut", "Wood Hut", "Stone Hut"];
+        let buildingcosts = [25, 75, 250];
+        let buildingcapacities = [5, 15, 25];
+
         var data = { //json object where all data will be stored so we can easily save/load it
             "badgood": 128,
             "time": 384,
-            "day": 0, //peoples
+            "day": 0, //people
             "population": 1,
-            "maxpop": 1,
+            "maxpop": 5,
             "untasked": 1,
             "hunters": 0,
             "lumberjacks": 0,
             "trappers": 0, //resources
             "meat": 5,
             "fur": 0,
-            "wood": 10
+            "wood": 10, //research
+            "brlevel": 0, //village
+            "buildings": 1
         }
         let interval = [10];
         let intimer;
         let currentevent;
         let eventnum;
-        let actionbtn;
+        let actionbtn = "taskbtns";
 
         //elements
         let title = document.getElementById("title");
@@ -192,6 +199,7 @@
         let poptxt = document.getElementById("pop");
         let infotxt = document.getElementById("info");
         let selectionbox = document.getElementById("selectionbox");
+        let buildbuilding = document.getElementById("buildbuildingbtn");
         let decidebtns = document.getElementById("decide");
         let dbtn1 = document.getElementById("d1");
         let dbtn2 = document.getElementById("d2");
@@ -233,7 +241,7 @@
         }
 
         //define base events
-        let BEnum = 1;
+        let BEnum = 2;
         const BE = {
             "0": {
                 "title": "A man comes to your village, he is looking weary...",
@@ -424,7 +432,7 @@
             }
         }
 
-        function updateUI() {
+        function updateUI() { //update UI
             daytxt.innerHTML = ("Day: " + (data.day - 1));
 
             //resources
@@ -437,15 +445,19 @@
             hunterstxt.innerHTML = ("Hunters: " + data.hunters);
             ljtxt.innerHTML = ("Lumberjacks: " + data.lumberjacks);
             trapperstxt.innerHTML = ("Trappers: " + data.trappers);
+
+            //calculations
+            data.maxpop = (data.buildings * buildingcapacities[data.brlevel]);
+            buildbuilding.innerHTML = buildingnames[data.brlevel];
         }
 
         function newevent() { //if there is an event that is gonna happen
             let eventtype = Math.round(Math.random() * 2); //what event type
             eventtype = 0;
             currentevent = eventtype;
-
             decidebtns.style.display = "block";
             hideactions();
+            figurecolor();
 
             if (eventtype == 0) {
                 eventnum = Math.round(Math.random() * BEnum);
@@ -455,7 +467,7 @@
 
         function pevent(num) { //person event
             mainp.innerHTML = BE[num].title
-            mainp.style.color = "rgb(0,0,0)";
+            mainp.style.display = "block";
             dbtn1.innerHTML = BE[num].btn1;
             dbtn2.innerHTML = BE[num].btn2;
             dbtn3.innerHTML = BE[num].btn3;
@@ -538,6 +550,7 @@
                     clearInterval(timer);
                     mainp.style.display = "none";
                     taskbtns.style.display = "block";
+                    infotxt.style.display = "block";
                     lrbtns.style.display = "block";
                     internalclock();
                 }
@@ -561,10 +574,12 @@
             if (num == 0) { //going left
                 if (taskbtns.style.display == "block") {
                     taskbtns.style.display = "none";
+                    infotxt.style.display = "none";
                     settingsbtns.style.display = "block";
                 } else if (otherbtns.style.display == "block") {
                     otherbtns.style.display = "none";
                     taskbtns.style.display = "block";
+                    infotxt.style.display = "block";
                 } else {
                     settingsbtns.style.display = "none";
                     otherbtns.style.display = "block";
@@ -572,6 +587,7 @@
             } else { //going right
                 if (taskbtns.style.display == "block") {
                     taskbtns.style.display = "none";
+                    infotxt.style.display = "none";
                     otherbtns.style.display = "block";
                 } else if (otherbtns.style.display == "block") {
                     otherbtns.style.display = "none";
@@ -579,6 +595,7 @@
                 } else {
                     settingsbtns.style.display = "none";
                     taskbtns.style.display = "block";
+                    infotxt.style.display = "block";
                 }
             }
         }
@@ -586,6 +603,7 @@
         function hideactions() { //hide action buttons
             if (taskbtns.style.display == "block") {
                 taskbtns.style.display = "none";
+                infotxt.style.display = "none";
                 actionbtn = "taskbtns";
             } else if (otherbtns.style.display == "block") {
                 otherbtns.style.display = "none";
@@ -600,12 +618,35 @@
         function showactions() { //show action buttons
             if (actionbtn == "taskbtns") {
                 taskbtns.style.display = "block";
+                infotxt.style.display = "block";
+                selectionbox.style.display = "block";
             } else if (actionbtn == "optionsbtns") {
                 otherbtns.style.display = "block";
             } else {
                 settingsbtns.style.display = "block";
             }
             lrbtns.style.display = "block";
+        }
+
+        function figurecolor() { //figure out if white or black text is better
+            if (data.badgood > 128) {
+                title.style.color = "rgb(0,0,0)";
+                mainele.style.color = "rgb(0,0,0)";
+                mainp.style.color = "rgb(0,0,0)";
+            } else {
+                title.style.color = "rgb(255,255,255)";
+                mainele.style.color = "rgb(255,255,255)";
+                mainp.style.color = "rgb(255,255,255)";
+            }
+        }
+
+        function buyhut() {
+            if (data.wood > buildingcosts[data.brlevel]) {
+                data.wood -= buildingcosts[data.brlevel];
+                data.buildings ++;
+            } else {
+                alert("Not enough wood to buy a " + buildingnames[data.brlevel]);
+            }
         }
 
     </script>
