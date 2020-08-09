@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Contact Jake Ballz</title>
+    <link rel="shortcut icon" href="image.png" />
+</head>
+
+<body style="background-color:black;">
+    <h1 style="color:white;font-size:75px;text-align:center">Jake Ballz 3D Prints</h1>
+    <style>
+        .button {
+            background-color: rgb(68, 68, 68);
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 1.25s;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: red;
+            color: white;
+        }
+
+        .button {
+            border-radius: 4px;
+        }
+
+        .container {
+            width: 750px;
+            clear: both;
+        }
+
+        .container input {
+            width: 100%;
+            clear: both;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+            text-align: center;
+        }
+
+        body {
+            text-align: center;
+        }
+
+        form {
+            display: inline-block;
+        }
+
+        textarea {
+            width: 300px;
+        }
+
+        input {
+            width: 250px;
+        }
+    </style>
+    <div class="form" style="text-align: left;">
+        <form id="gform" method="POST" class="pure-form pure-form-stacked" data-email="from_email@example.com"
+            action="https://script.google.com/macros/s/AKfycbyIHXx9qriv4PpbofioDrVs3og91Iw7e53wl18IUg86yOjreA/exec">
+            <label style="text-align: left;" for="Name">Name: </label>
+            <input style="text-align: left;" id="Name" name="Name" placeholder="Name" /><br><br>
+
+            <label style="text-align: left;" for="Model">Model: </label>
+            <input style="text-align: left;" id="Model" name="Model"
+                placeholder="Model: Puzzle Cube, Custom..." /><br><br>
+
+            <label style="text-align: left;" for="Message">Message: </label>
+            <textarea style="text-align: left;" id="Message" name="Message" rows="10"
+                placeholder="Any aditional info"></textarea><br>
+            <label style="text-align: left;" for="email"><em>Your</em> Email Address:</label>
+            <input style="text-align: left;" id="email" name="email" type="email" value="" required
+                placeholder="your.name@email.com">
+
+            <button class="button-success pure-button button-xlarge">
+                <i class="fa fa-paper-plane"></i>&nbsp;Send
+            </button>
+        </form>
+    </div>
+</body>
+<br><br>
+<footer style="color: white; text-align: left;">ballzprintz@gmail.com</footer>
+
+</html>

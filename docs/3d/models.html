@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Jake Ballz</title>
+    <link rel="shortcut icon" href="image.png" />
+</head>
+
+<body style="background-color:black;">
+    <h1 style="color:white;font-size:75px;text-align:center">Jake Ballz 3D Prints</h1>
+    <style>
+        .button {
+            background-color: rgb(68, 68, 68);
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 1.25s;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: red;
+            color: white;
+        }
+
+        .button {
+            border-radius: 4px;
+        }
+    </style>
+    <div class="row">
+        <div class="column">
+            <img src="img_nature.jpg" alt="Nature" onclick="imageclick(this);">
+        </div>
+        <div class="column">
+            <img src="img_snow.jpg" alt="Snow" onclick="imageclick(this);">
+        </div>
+        <div class="column">
+            <img src="img_mountains.jpg" alt="Mountains" onclick="imageclick(this);">
+        </div>
+        <div class="column">
+            <img src="img_lights.jpg" alt="Lights" onclick="imageclick(this);">
+        </div>
+    </div>
+
+    <!-- The expanding image container -->
+    <div class="container">
+        <!-- Close the image -->
+        <span onclick="this.parentElement.style.display='none'" class="closebtn">&times;</span>
+
+        <!-- Expanded image -->
+        <img id="expandedImg" style="width:100%">
+
+        <!-- Image text -->
+        <div id="imgtext"></div>
+    </div>
+    <script>
+        function myFunction(imgs) {
+            // Get the expanded image
+            var expandImg = document.getElementById("expandedImg");
+            // Get the image text
+            var imgText = document.getElementById("imgtext");
+            // Use the same src in the expanded image as the image being clicked on from the grid
+            expandImg.src = imgs.src;
+            // Use the value of the alt attribute of the clickable image as text inside the expanded image
+            imgText.innerHTML = imgs.alt;
+            // Show the container element (hidden with CSS)
+            expandImg.parentElement.style.display = "block";
+        }
+    </script>
+    <div style="text-align: center;" class="btngroup">
+        <a href="email.html"><button class="button button1">Request Quote</button></a>
+    </div>
+</body>
+<br><br>
+<footer style="color: white; text-align: left;">ballzprintz@gmail.com</footer>
+
+</html>
