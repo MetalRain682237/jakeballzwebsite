@@ -6,7 +6,7 @@
     <link rel="shortcut icon" href="image.png" />
 </head>
 
-<body style="background-color:black;">
+<body onload="updateImages(0)" style="background-color:black;">
     <h1 style="color:white;font-size:75px;text-align:center">Jake Ballz 3D Prints</h1>
     <style>
         .button {
@@ -31,22 +31,83 @@
         .button {
             border-radius: 4px;
         }
+
+        /* The grid: Four equal columns that floats next to each other */
+        .column {
+            float: left;
+            width: 15%;
+            padding: 10px;
+        }
+
+        /* Style the images inside the grid */
+        .column img {
+            opacity: 0.8;
+            cursor: pointer;
+        }
+
+        .column img:hover {
+            opacity: 1;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        /* The expanding image container (positioning is needed to position the close button and the text) */
+        .container {
+            position: relative;
+            display: none;
+        }
+
+        /* Expanding image text */
+        #imgtext {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            color: white;
+            font-size: 20px;
+        }
+
+        /* Closable button inside the image */
+        .closebtn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: white;
+            font-size: 35px;
+            cursor: pointer;
+        }
+
+        img {
+            max-width: 500px;
+        }
+
+        #over img {
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
     </style>
     <div class="row">
         <div class="column">
-            <img src="img_nature.jpg" alt="Nature" onclick="imageclick(this);">
+            <img src="./images/pc1.jpeg" id="1" width="50%" onclick="imageclick(this);">
         </div>
         <div class="column">
-            <img src="img_snow.jpg" alt="Snow" onclick="imageclick(this);">
+            <img src="./images/pc2.jpeg" id="2" width="50%" onclick="imageclick(this);">
         </div>
         <div class="column">
-            <img src="img_mountains.jpg" alt="Mountains" onclick="imageclick(this);">
+            <img src="./images/pc3.jpeg" id="3" width="50%" onclick="imageclick(this);">
         </div>
         <div class="column">
-            <img src="img_lights.jpg" alt="Lights" onclick="imageclick(this);">
+            <img src="./images/pc4.jpeg" id="4" width="50%" onclick="imageclick(this);">
+        </div>
+        <div class="column">
+            <img src="./images/pc5.jpeg" id="5" width="50%" onclick="imageclick(this);">
         </div>
     </div>
-
     <!-- The expanding image container -->
     <div class="container">
         <!-- Close the image -->
@@ -58,8 +119,31 @@
         <!-- Image text -->
         <div id="imgtext"></div>
     </div>
+    <div style="text-align: left;color: white;font-size: 20px;margin-left: 25%;">
+        <p id="name">Model Name:</p>
+        <p id="parts">Parts:</p>
+        <p id="cost">Cost:</p>
+        <p id="size">Size:</p>
+    </div>
+    <div id="leftright" style="text-align: center;" class="btngroup">
+        <button id="left" class="button" onclick="LR(0)">&lt;</button>
+        <button id="right" class="button" onclick="LR(1)">&gt;</button>
+    </div>
     <script>
-        function myFunction(imgs) {
+        let integer = 0;
+        let max = 0;
+        let fileNames = ["pc"];
+        let modelNames = ["Puzzle Cube"];
+        let modelPieces = [10];
+        let modelCosts = [10];
+        let modelSizes = [("1\" x 1\" x 1\"")];
+
+        let mname = document.getElementById("name");
+        let parts = document.getElementById("parts");
+        let cost = document.getElementById("cost");
+        let size = document.getElementById("size");
+
+        function imageclick(imgs) {
             // Get the expanded image
             var expandImg = document.getElementById("expandedImg");
             // Get the image text
@@ -67,9 +151,32 @@
             // Use the same src in the expanded image as the image being clicked on from the grid
             expandImg.src = imgs.src;
             // Use the value of the alt attribute of the clickable image as text inside the expanded image
-            imgText.innerHTML = imgs.alt;
+            imgText.innerHTML = modelNames[integer];
             // Show the container element (hidden with CSS)
             expandImg.parentElement.style.display = "block";
+        }
+        function LR(num) {
+            if (num == 0) {
+                num = (integer - 1);
+            } else {
+                num = (integer + 1);
+            }
+            if (num > max) {
+                num = 0;
+            } else if (num < 0) {
+                num = max;
+            }
+            updateImages(num);
+        }
+        function updateImages(num) {
+            for (let i = 1; i < 5; i++) {
+                let elem = document.getElementById(i);
+                elem.src = ("./images/" + fileNames[num] + i + ".jpeg");
+            }
+            mname.innerHTML = ("Model Name: " + modelNames[num]);
+            parts.innerHTML = ("Parts: " + modelPieces[num]);
+            cost.innerHTML = ("Price: $" + modelCosts[num]);
+            size.innerHTML = ("Size: " + modelSizes[num] + " (Length x Width x Height)");
         }
     </script>
     <div style="text-align: center;" class="btngroup">
