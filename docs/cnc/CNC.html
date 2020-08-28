@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<head>
+    <title>CNC Program</title>
+</head>
+
+<body id="content-main" onload="onload()">
+    <style>
+        .button {
+            background-color: rgb(68, 68, 68);
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 1.25s;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: red;
+            color: white;
+        }
+
+        .button {
+            border-radius: 4px;
+        }
+    </style>
+    <div id="canvasdiv">
+        <canvas id="canvas" width="701" height="501" style="float: left;"></canvas>
+    </div>
+    <div id="Name" style="color: black;padding-left: 2.5%;padding-right: 2.5%;display: block;">
+        <p id="id" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">ID: </p>
+        <p id="tool" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Tool Number: </p>
+        <p id="speed" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Speed: </p>
+        <p id="feed" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Feed: </p>
+        <p id="warning" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Warnings: </p><br>
+    </div>
+    <div style="text-align: left;" class="btngroup" style="display: block; margin-left: auto; margin-right: auto;">
+        <button class="button button1" onclick="showtextarea()" id="newfilebtn">New File</button>
+    </div>
+    <div id="options" style="text-align: left;" class="btngroup"
+        style="margin-left: auto; margin-right: auto; display: none;">
+        <button style="display: none; float: left; margin-top: auto;" class="button button1" onclick="check()"
+            id="btn0">Check</button>
+        <button style="display: none;" class="button button1" onclick="reset()" id="btn1">Reset</button>
+        <button style="display: none;" class="button button1" onclick="graphall()" id="btn1">Graph</button>
+        <button style="display: none;" class="button button1" onclick="graphall()" id="btn2">Add Z Movements</button>
+        <button style="display: none; float: left; margin-top: auto;" class="button button1" onclick="back()"
+            id="btn3">Back</button>
+        <button style="display: none; margin-top: auto;" class="button button1" onclick="next()"
+            id="btn4">Forward</button>
+    </div>
+    <script>
+        var file;
+        const c = document.getElementById("canvas");
+
+        let G = "none";
+        let X = "none";
+        let Y = "none";
+        let Z = "none";
+        let zeroX = 351;
+        let zeroY = 251;
+        let linenum = 0;
+        let ZFound = false;
+
+        let id;
+        let tool;
+        let speed;
+        let feed;
+        let warning;
+        let filetext;
+
+        function onload() {
+            id = document.getElementById('id');
+            tool = document.getElementById('tool');
+            speed = document.getElementById('speed');
+            feed = document.getElementById('feed');
+            warning = document.getElementById('warning');
+            filetext = document.getElementById('FT');
+        }
+
+        function showtextarea() {
+            filetext.style.display = "block";
+            let element = document.getElementById('newfilebtn');
+            element.parentNode.removeChild(element);
+            let element2 = document.getElementById('inputfile');
+            element2.parentNode.removeChild(element2);
+
+            for (let i = 0; i < 5; i++) {
+                let btn = ("btn" + i);
+                document.getElementById(btn).style.display = "block";
+            }
+        }
+
+        function findnext(start) {
+            let lines = filetext.value.toUpperCase().split("\n"); //get the lines split up
+            for (let i = start; i < lines.length; i++) {
+                let line = lines[i];
+                if (line.includes("Z")) {
+                    ZFound = true;
+                }
+                if ((ZFound == true) && ((line.includes("X")) || (line.includes("Y")))) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        function findprevious(start) {
+            let lines = filetext.value.toUpperCase().split("\n"); //get the lines split up
+            for (let i = start; i > 0; i--) {
+                let line = lines[i];
+                if ((line.includes("X")) || (line.includes("Y"))) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        function next() {
+            const ctx = c.getContext("2d");
+            ctx.beginPath();
+            ctx.clearRect(0, 0, c.style.width, c.style.height);
+            let next = findnext(linenum + 1);
+            if (next > filetext.value.toUpperCase().split("\n").length) {
+                next = filetext.value.toUpperCase().split("\n").length;
+            }
+            linenum = next;
+            graphlines(next);
+            check();
+        }
+
+        function back() {
+            replacecanvas();
+            let next = findprevious(linenum - 1);
+            linenum = next;
+            graphlines(next);
+            check();
+        }
+
+        function graphlines(end) {
+            let lines = filetext.value.toUpperCase().split("\n"); //get the lines split up
+            let started = false;
+            let first = false;
+            let SG; //start G
+            let SX; //start X
+            let SY; //start Y
+            let SZ; //start Z
+            for (let i = 0; i < end; i++) {
+                let line = lines[i];
+                let words = line.split(" ");
+                let NG = "none";
+                let NX = "none";
+                let NY = "none";
+                let NZ = "none";
+
+                if ((line.startsWith("G0")) && (first == false)) {
+                    first = true;
+                    SG = getcord(line, "G");
+                    G = SG;
+                    SX = getcord(line, "X");
+                    X = SX;
+                    SY = getcord(line, "Y");
+                    Y = SY;
+                    draw(0, 0, SG, SX, SY, 0.1);
+                }
+                if (line.startsWith("Z")) {
+                    started = true;
+                    Z = getcord(line, "Z");
+                }
+
+                if (started == true) { //if we can start cutting the part
+
+                    if (line.includes("G0")) {
+                        NG = 0;
+                    } else if (line.includes("G1")) {
+                        NG = 1;
+                    }
+                    if (G == "none") {
+                        G = NG;
+                    }
+                    if (line.includes("X")) {
+                        NX = getcord(line, "X");
+                    }
+                    if (line.includes("Y")) {
+                        NY = getcord(line, "Y");
+                    }
+                    if (line.includes("Z")) {
+                        Z = getcord(line, "Z");
+                    }
+
+                    if ((NX != "none") || (NY != "none")) { //if we are moving on the X or Y axis
+                        let GTS;
+                        let XTS;
+                        let YTS;
+
+                        if (NG != "none") {
+                            GTS = NG;
+                        } else {
+                            GTS = G;
+                        }
+                        if (NX != "none") {
+                            XTS = NX;
+                        } else {
+                            XTS = X;
+                        }
+                        if (NY != "none") {
+                            YTS = NY;
+                        } else {
+                            YTS = Y;
+                        }
+                        draw(X, Y, GTS, XTS, YTS, Z); //draw the line
+                    }
+
+                    if (NG != "none") {
+                        G = NG;
+                    }
+                    if (NX != "none") {
+                        X = NX;
+                    }
+                    if (NY != "none") {
+                        Y = NY;
+                    }
+                }
+            }
+        }
+
+        function getcord(line, letter) {
+            let words = line.split(" ");
+            for (let i = 0; i < words.length; i++) {
+                if (words[i].startsWith(letter)) {
+                    let number = parseFloat(words[i].slice(1), 10);
+                    return number;
+                }
+            }
+            return -1;
+        }
+
+        function draw(DSX, DSY, DG, DX, DY, DZ) {
+            //console.log(`${DSX}, ${DSY}, ${DG}, ${X}, ${Y}, ${Z}`);
+            const ctx = c.getContext("2d");
+            ctx.beginPath();
+            if (DG == 0) {
+                ctx.setLineDash([5, 10]);
+            } else if (DG == 1) {
+                ctx.setLineDash([]);
+            } else {
+                addwarning("G error");
+                return;
+            }
+            if (DZ > 0) {
+                ctx.lineWidth = 1;
+            } else {
+                ctx.lineWidth = 5;
+            }
+            if ((DG == 0) && (DZ <= 0)) { //if we are moving quickly while cutting
+                ctx.strokeStyle = "red";
+            } else if ((DG == 1) && (DZ > 0)) { //if we are moving slowly while not cutting
+                ctx.strokeStyle = "red";
+            } else {
+                ctx.strokeStyle = "black";
+            }
+            ctx.moveTo((zeroX + (DSX * 100)), (zeroY + -(DSY * 100)));
+            ctx.lineTo((zeroX + (DX * 100)), (zeroY + -(DY * 100)));
+            ctx.stroke();
+        }
+
+        function load() {
+            filetext.value = file;
+        }
+
+        function reset() {
+            linenum = 0;
+            ZFound = false;
+            replacecanvas();
+            warning.innerHTML = "Warnings: ";
+            warning.style.color = "black";
+        }
+
+        function replacecanvas() {
+            const ctx = c.getContext("2d");
+            ctx.beginPath();
+            ctx.rect(0, 0, c.width, c.height);
+            ctx.fillStyle = "white";
+            ctx.fill();
+        }
+
+        function check() {
+            let lines = filetext.value.toUpperCase().split("\n"); //get the lines split up
+            filetext.rows = lines.length;
+            let idnum = false;
+            let toolnum = false;
+            let speednum = false;
+            let feednum = false;
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                let words = line.split(" ");
+                if (line.includes("O")) {
+                    idnum = true;
+                    let num = getcord(line, "O");
+                    id.innerHTML = ("ID: " + num);
+                    if ((num > 8000) || (num.toString().length != 4)) {
+                        addwarning("Bad ID number");
+                    } else if (isNaN(num)) {
+                        addwarning("No ID is specified");
+                    }
+                }
+                if (line.startsWith("T")) {
+                    toolnum = true;
+                    let num = getcord(line, "T");
+                    tool.innerHTML = ("Tool Number: " + num);
+                    if (isNaN(num)) {
+                        addwarning("No tool number is specified");
+                    }
+                }
+                if (line.includes("S")) {
+                    speednum = true;
+                    let num = getcord(line, "S");
+                    speed.innerHTML = ("Speed: " + num + " RPM");
+                    if (isNaN(num)) {
+                        addwarning("No speed is specified");
+                    }
+                }
+                if (line.includes("F")) {
+                    feednum = true;
+                    let num = getcord(line, "F");
+                    feed.innerHTML = ("Feed: " + num + "");
+                    if (isNaN(num)) {
+                        addwarning("No feed rate is specified");
+                    }
+                }
+            }
+            if (idnum == false) {
+                addwarning("No ID is specified");
+            }
+            if (toolnum == false) {
+                addwarning("No tool number is specified");
+            }
+            if (speednum == false) {
+                addwarning("No speed is specified");
+            }
+            if (feednum == false) {
+                addwarning("No feed rate is specified");
+            }
+        }
+
+        function addwarning(warn) {
+            let oldtext = warning.innerHTML;
+            oldtext += ("<br>" + warn);
+            warning.innerHTML = oldtext;
+            warning.style.color = "red";
+        }
+
+    </script>
+    <input type="file" name="inputfile" id="inputfile">
+    <br>
+
+    <pre id="output"></pre>
+
+    <script type="text/javascript">
+        document.getElementById('inputfile')
+            .addEventListener('change', function () {
+
+                var fr = new FileReader();
+                fr.onload = function () {
+                    file = fr.result;
+                    document.getElementById('content-main').style = 'width: auto';
+                    load();
+                    showtextarea();
+                    check();
+                }
+
+                fr.readAsText(this.files[0]);
+            });
+    </script>
+    <textarea rows="20" cols="30" id="FT"
+        style="color:black;padding-right: 2.5%; display: none; text-align: left;">
+        %
+        O7543 (Name)
+        G20 G90
+        T1 M6 (Tool Number)
+        S1500 M3
+        G0 G54 X.25 Y-1.5
+        G43 Z1.0 H1
+        Z.1</textarea>
+</body>
