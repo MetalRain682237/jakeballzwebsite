@@ -47,12 +47,12 @@
         <button style="display: none; float: left; margin-top: auto;" class="button button1" onclick="check()"
             id="btn0">Check</button>
         <button style="display: none;" class="button button1" onclick="reset()" id="btn1">Reset</button>
-        <button style="display: none;" class="button button1" onclick="graphall()" id="btn1">Graph</button>
-        <button style="display: none;" class="button button1" onclick="graphall()" id="btn2">Add Z Movements</button>
+        <button style="display: none;" class="button button1" onclick="graphall()" id="btn2">Graph</button>
+        <button style="display: none;" class="button button1" onclick="graphall()" id="btn3">Add Z Movements</button>
         <button style="display: none; float: left; margin-top: auto;" class="button button1" onclick="back()"
-            id="btn3">Back</button>
+            id="btn4">Back</button>
         <button style="display: none; margin-top: auto;" class="button button1" onclick="next()"
-            id="btn4">Forward</button>
+            id="btn5">Forward</button>
     </div>
     <script>
         var file;
@@ -90,7 +90,7 @@
             let element2 = document.getElementById('inputfile');
             element2.parentNode.removeChild(element2);
 
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 6; i++) {
                 let btn = ("btn" + i);
                 document.getElementById(btn).style.display = "block";
             }
