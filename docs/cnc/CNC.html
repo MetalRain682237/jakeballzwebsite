@@ -34,26 +34,30 @@
     </div>
     <div id="Name" style="color: black;padding-left: 2.5%;padding-right: 2.5%;display: block;">
         <p id="id" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">ID: </p>
+        <p id="safety" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Safety Line: </p>
         <p id="tool" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Tool Number: </p>
         <p id="speed" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Speed: </p>
-        <p id="feed" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Feed: </p>
+        <p id="feed" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Feed Rate: </p>
         <p id="warning" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;">Warnings: </p><br>
     </div>
     <div style="text-align: left;" class="btngroup" style="display: block; margin-left: auto; margin-right: auto;">
         <button class="button button1" onclick="showtextarea()" id="newfilebtn">New File</button>
     </div>
-    <div id="options" style="text-align: left;" class="btngroup"
-        style="margin-left: auto; margin-right: auto; display: none;">
-        <button style="display: none; float: left; margin-top: auto;" class="button button1" onclick="check()"
-            id="btn0">Check</button>
-        <button style="display: none;" class="button button1" onclick="reset()" id="btn1">Reset</button>
+    <div id="options" style="text-align: left;" class="btngroup" style="margin-right: auto; display: none;">
+        <button style="display: none; float: left; margin-top: auto; margin-left: 0%;" class="button button1"
+            onclick="check()" id="btn0">Check</button>
+        <button style="display: none; margin-left: 2.5%;" class="button button1" onclick="reset()"
+            id="btn1">Reset</button>
         <button style="display: none;" class="button button1" onclick="graphall()" id="btn2">Graph</button>
-        <button style="display: none;" class="button button1" onclick="graphall()" id="btn3">Add Z Movements</button>
-        <button style="display: none; float: left; margin-top: auto;" class="button button1" onclick="back()"
-            id="btn4">Back</button>
-        <button style="display: none; margin-top: auto;" class="button button1" onclick="next()"
+        <button style="display: none;" class="button button1" onclick="addz()" id="btn3">Add Z Movements</button>
+        <button style="display: none; float: left; margin-top: auto; margin-left: 0%;" class="button button1"
+            onclick="back()" id="btn4">Back</button>
+        <button style="display: none; margin-top: auto; margin-left: 2.5%;" class="button button1" onclick="next()"
             id="btn5">Forward</button>
+        <button id="btn6" class="button" style="display: none;" onclick="savegame()">Save File</button>
     </div>
+    <p id="linetext" style="text-align: left;font-size: 20px;margin-top: 0%;margin-bottom: 0%;"></p>
+    <a id="downloadAnchorElem" style="display:none"></a>
     <script>
         var file;
         const c = document.getElementById("canvas");
@@ -66,34 +70,43 @@
         let zeroY = 251;
         let linenum = 0;
         let ZFound = false;
+        let multiplier = 100;
 
         let id;
+        let safety;
         let tool;
         let speed;
         let feed;
         let warning;
         let filetext;
+        let linetext;
 
         function onload() {
             id = document.getElementById('id');
+            safety = document.getElementById('safety');
             tool = document.getElementById('tool');
             speed = document.getElementById('speed');
             feed = document.getElementById('feed');
             warning = document.getElementById('warning');
             filetext = document.getElementById('FT');
+            linetext = document.getElementById('linetext');
+            depth = document.getElementById('linetext');
         }
 
         function showtextarea() {
             filetext.style.display = "block";
+            linetext.style.display = "block";
+            depth.style.display = "block";
             let element = document.getElementById('newfilebtn');
             element.parentNode.removeChild(element);
             let element2 = document.getElementById('inputfile');
             element2.parentNode.removeChild(element2);
 
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < 7; i++) {
                 let btn = ("btn" + i);
                 document.getElementById(btn).style.display = "block";
             }
+            check();
         }
 
         function findnext(start) {
@@ -122,23 +135,27 @@
         }
 
         function next() {
-            const ctx = c.getContext("2d");
-            ctx.beginPath();
-            ctx.clearRect(0, 0, c.style.width, c.style.height);
+            replacecanvas();
             let next = findnext(linenum + 1);
-            if (next > filetext.value.toUpperCase().split("\n").length) {
-                next = filetext.value.toUpperCase().split("\n").length;
+            if (next != -1) {
+                linenum = next;
+            } else {
+                linenum++;
+                if (linenum >= (filetext.value.toUpperCase().split("\n")).length - 1) {
+                    linenum = (filetext.value.toUpperCase().split("\n").length - 1);
+                }
             }
-            linenum = next;
-            graphlines(next);
+            graphlines(linenum);
             check();
         }
 
         function back() {
             replacecanvas();
             let next = findprevious(linenum - 1);
-            linenum = next;
-            graphlines(next);
+            if (next != -1) {
+                linenum = next;
+            }
+            graphlines(linenum);
             check();
         }
 
@@ -166,7 +183,8 @@
                     X = SX;
                     SY = getcord(line, "Y");
                     Y = SY;
-                    draw(0, 0, SG, SX, SY, 0.1);
+                    draw(0, 0, SG, SX, SY, 0.1); //draw the line
+                    linetext.innerHTML = ("<b>Line: " + line + " (" + (i + 1) + "/" + lines.length + ")<b>");
                 }
                 if (line.startsWith("Z")) {
                     started = true;
@@ -214,6 +232,7 @@
                             YTS = Y;
                         }
                         draw(X, Y, GTS, XTS, YTS, Z); //draw the line
+                        linetext.innerHTML = ("<b>Line: " + line + " (" + (i + 1) + "/" + lines.length + ")<b>");
                     }
 
                     if (NG != "none") {
@@ -264,8 +283,25 @@
             } else {
                 ctx.strokeStyle = "black";
             }
-            ctx.moveTo((zeroX + (DSX * 100)), (zeroY + -(DSY * 100)));
-            ctx.lineTo((zeroX + (DX * 100)), (zeroY + -(DY * 100)));
+            let X1 = (zeroX + (DSX * multiplier));
+            let X2 = (zeroX + (DX * multiplier));
+            let Y1 = (zeroY + -(DSY * multiplier));
+            let Y2 = (zeroY + -(DY * multiplier));
+
+            if ((X1 < 5) || (X1 > 696) || (X2 < 5) || (X2 > 696) || (Y1 < 5) || (Y1 > 496) || (Y2 < 5) || (Y2 > 496)) {
+                do {
+                    multiplier -= 5;
+                    X1 = (zeroX + (DSX * multiplier));
+                } while ((X1 < 5) || (X1 > 696));
+
+                X1 = (zeroX + (DSX * multiplier));
+                X2 = (zeroX + (DX * multiplier));
+                Y1 = (zeroY + -(DSY * multiplier));
+                Y2 = (zeroY + -(DY * multiplier));
+            }
+
+            ctx.moveTo(X1, Y1);
+            ctx.lineTo(X2, Y2);
             ctx.stroke();
         }
 
@@ -292,14 +328,18 @@
         function check() {
             let lines = filetext.value.toUpperCase().split("\n"); //get the lines split up
             filetext.rows = lines.length;
+            warning.innerHTML = "Warnings: ";
+            warning.style.color = "black";
             let idnum = false;
+            let safetynum = false;
             let toolnum = false;
             let speednum = false;
             let feednum = false;
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i];
                 let words = line.split(" ");
-                if (line.includes("O")) {
+
+                if ((line.startsWith("O")) && idnum == false) {
                     idnum = true;
                     let num = getcord(line, "O");
                     id.innerHTML = ("ID: " + num);
@@ -308,34 +348,46 @@
                     } else if (isNaN(num)) {
                         addwarning("No ID is specified");
                     }
+                    continue;
                 }
-                if (line.startsWith("T")) {
+                if ((line.includes("G")) && (!line.includes("G0")) && (!line.includes("G1")) && (!line.includes("Z")) && (safetynum == false)) {
+                    safetynum = true;
+                    safety.innerHTML = ("Safety Line: " + line);
+                    continue;
+                }
+                if ((line.startsWith("T")) && (toolnum == false)) {
                     toolnum = true;
                     let num = getcord(line, "T");
                     tool.innerHTML = ("Tool Number: " + num);
                     if (isNaN(num)) {
                         addwarning("No tool number is specified");
                     }
+                    continue;
                 }
-                if (line.includes("S")) {
+                if ((line.includes("S")) && ((line.includes("M3"))) || (line.includes("M4")) && (speednum == false)) {
                     speednum = true;
                     let num = getcord(line, "S");
                     speed.innerHTML = ("Speed: " + num + " RPM");
                     if (isNaN(num)) {
                         addwarning("No speed is specified");
                     }
+                    continue;
                 }
-                if (line.includes("F")) {
+                if ((line.includes("F")) && (feednum == false)) {
                     feednum = true;
                     let num = getcord(line, "F");
-                    feed.innerHTML = ("Feed: " + num + "");
+                    feed.innerHTML = ("Feed Rate: " + num + "");
                     if (isNaN(num)) {
                         addwarning("No feed rate is specified");
                     }
+                    continue;
                 }
             }
             if (idnum == false) {
                 addwarning("No ID is specified");
+            }
+            if (safetynum == false) {
+                addwarning("No safety line is specified");
             }
             if (toolnum == false) {
                 addwarning("No tool number is specified");
@@ -346,13 +398,73 @@
             if (feednum == false) {
                 addwarning("No feed rate is specified");
             }
+            if ((lines[0] != "%") || (lines[(lines.length - 1)] != "%")) {
+                addwarning("Missing start or end of program % sign");
+            }
+            if (warning.innerHTML == "Warnings: ") {
+                warning.innerHTML = "Warnings: none";
+            }
         }
 
         function addwarning(warn) {
             let oldtext = warning.innerHTML;
+            if (oldtext == "Warnings: none") {
+                oldtext = "Warnings: ";
+            }
             oldtext += ("<br>" + warn);
             warning.innerHTML = oldtext;
             warning.style.color = "red";
+        }
+
+        function graphall() {
+            let lines = filetext.value.toUpperCase().split("\n"); //get the lines split up
+            let length = lines.length;
+            linenum = length;
+            graphlines(length);
+        }
+
+        function addz() {
+            let depth;
+
+            let inputdepth = prompt("Please enter the depth to cut at", "Negative value");
+            if (inputdepth == null || inputdepth == "") {
+                addwarning("User cancelled entering depth");
+                return;
+            } else {
+                depth = inputdepth;
+            }
+
+            let lines = filetext.value.toUpperCase().split("\n"); //get the lines split up
+            let started = false;
+            let newtext = "";
+            let ZD;
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                if (line.includes("Z")) {
+                    ZD = getcord(line, "Z");
+                    started = true;
+                    newtext += (line + "\n");
+                    continue;
+                }
+                if ((line.includes("/")) || (line.includes("\\"))) {
+                    if (ZD >= 0) {
+                        newtext += ("G1 Z" + depth + "\n");
+                        ZD = parseFloat(depth, 10);
+                        continue;
+                    } else {
+                        newtext += ("G0 Z.1\n");
+                        ZD = 0.1;
+                        continue;
+                    }
+                }
+                if (i < (lines.length - 1)) {
+                    newtext += (line + "\n");
+                } else {
+                    newtext += line;
+                }
+            }
+            filetext.value = newtext;
+            check();
         }
 
     </script>
@@ -371,20 +483,31 @@
                     document.getElementById('content-main').style = 'width: auto';
                     load();
                     showtextarea();
-                    check();
                 }
 
                 fr.readAsText(this.files[0]);
             });
+        function savegame() { //downloads a text file for the user
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(filetext.value);
+            var dlAnchorElem = document.getElementById('downloadAnchorElem');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "CNC.txt");
+            dlAnchorElem.click();
+        }
     </script>
-    <textarea rows="20" cols="30" id="FT"
-        style="color:black;padding-right: 2.5%; display: none; text-align: left;">
-        %
-        O7543 (Name)
-        G20 G90
-        T1 M6 (Tool Number)
-        S1500 M3
-        G0 G54 X.25 Y-1.5
-        G43 Z1.0 H1
-        Z.1</textarea>
+    <textarea rows="20" cols="30" id="FT" style="color:black;padding-right: 2.5%; display: none; text-align: left;">
+%
+O1234
+G20 G90
+T1 M6
+S1500 M3
+G0 G54 X0 Y0
+G43 Z1.0 H1
+Z.1
+G1 Z-.05 F10
+(code)
+G0 Z.1
+G0 G53 Z0
+M2
+%</textarea>
 </body>
