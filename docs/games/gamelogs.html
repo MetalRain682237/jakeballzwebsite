@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Jake Ballz</title>
-        <link rel="shortcut icon" href="DogIcon2.jpg"/>
-    </head>
-    <body style="background-color:black;">
-        <h1 style="color:white;font-size:75px;text-align:center">HTML Games Update Logs</h1>
-        <style>
-            .button {
+
+<head>
+    <title>Jake Ballz</title>
+    <link rel="shortcut icon" href="DogIcon2.jpg" />
+</head>
+
+<body style="background-color:black;">
+    <h1 style="color:white;font-size:75px;text-align:center">HTML Games Update Logs</h1>
+    <style>
+        .button {
             background-color: rgb(68, 68, 68);
             border: none;
             color: white;
@@ -19,26 +21,35 @@
             margin: 4px 2px;
             transition-duration: 1.25s;
             cursor: pointer;
-            }
-            .button:hover {
+        }
+
+        .button:hover {
             background-color: red;
             color: white;
-            }
-            .button {border-radius: 4px;}
-        </style>
-        <div style="text-align: center;" class="btngroup">
-            <button class="button" onclick="btnclicked('pm')">Pickaxe Miner</button>
-        </div>
-        <p id="txt1" style="color:white;font-size:25px;text-align:left; padding-left: 20%; padding-right: 20%;"></p>
-    </body>
-    <script>
-        function btnclicked(word) {
-            let pm = "4/26/20 Pickaxe Miner:<br>- Game released.<br><br>4/27/20 Pickaxe Miner:<br>- Fixed a stat page issue<br>- Made it so switching back to a pickaxe you used doesn't cost more blocks";
-            let text;
-            if (word == "pm") {
-                text = pm;
-            }
-            document.getElementById("txt1").innerHTML = text; 
         }
-    </script>
+
+        .button {
+            border-radius: 4px;
+        }
+    </style>
+    <div style="text-align: center;" class="btngroup">
+        <button class="button" onclick="btnclicked('pm')" style="display: none;">Pickaxe Miner</button>
+        <button class="button" onclick="btnclicked('gd')">Geometry Defense</button>
+    </div>
+    <p id="txt1" style="color:white;font-size:25px;text-align:left; padding-left: 20%; padding-right: 20%;"></p>
+</body>
+<script>
+    function btnclicked(word) {
+        let pm = "4/26/20 Pickaxe Miner:<br>- Game released.<br><br>4/27/20 Pickaxe Miner:<br>- Fixed a stat page issue<br>- Made it so switching back to a pickaxe you used doesn't cost more blocks";
+        let gd = "9/9/20 Geometry Defense:<br>- Game released.";
+        let text;
+        if (word == "pm") {
+            text = pm;
+        } else if (word == "gd") {
+            text = gd;
+        }
+        document.getElementById("txt1").innerHTML = text;
+    }
+</script>
+
 </html>

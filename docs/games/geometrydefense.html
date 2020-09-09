@@ -481,7 +481,7 @@
             if (p.ESR < 100) {
                 p.ESR = 100;
             }
-            xpm = ((p.Day / 100) + 1); //set the xp multiplier
+            xpm = ((p.Day / 50) + 1); //set the xp multiplier
             rungame();
             savebtn.style.display = "none";
         }
@@ -1005,7 +1005,7 @@
                 gomtxt.innerHTML = ("You made it to day " + p.Day + "!");
             }
 
-            ctx.fillStyle = "red"; //fill in the canvas by the text
+            ctx.fillStyle = "white"; //fill in the canvas by the text
             ctx.beginPath();
             ctx.rect(475, 175, 600, 250);
             ctx.fill();
