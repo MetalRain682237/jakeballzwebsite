@@ -129,11 +129,11 @@
         Gunner<br>$500</button>
     <button id="upgradegunner" class="button" style="left:1300px;top:427px;display:none;"
         onclick="upgradegunner()">Upgrade Gunner<br>$150</button>
-    <button id="unlocks" class="button" style="left:1300px;top:500px;display:none;" onclick="unlocks()">Unlocks<br>0
+    <button id="unlocks" class="button" style="left:1300px;top:501px;display:none;" onclick="unlocks()">Unlocks<br>0
         Ability Points</button>
 
     <p id="basehealth" class="p" style="left: 1100px; top: 10px; font-size: 25px; display: none; text-align: left;">200
-        HP</p>
+        HP/200 HP</p>
     <p id="day" class="p" style="left: 1300px; top: 10px; font-size: 25px; display: none; text-align: left;">Day: 0</p>
     <p id="enemies" class="p" style="left: 1300px; top: 50px; font-size: 25px; display: none; text-align: left;">
         Enemies: 0/0</p>
@@ -172,7 +172,7 @@
         <button id="gobtn" class="buttoncent" style="top:350px;" onclick="restart()">Start Over</button>
     </div>
 
-    <button id="save" class="button" style="display: none;left: 1300px;top: 573px;" onclick="savegame()">Save
+    <button id="save" class="button" style="display: none;left: 1300px;top: 574px;" onclick="savegame()">Save
         Game</button>
     <a id="downloadAnchorElem" style="display:none"></a>
     <input class="p" type="file" name="inputfile" id="inputfile" style="left: 52px; top: 550px;">
@@ -503,7 +503,7 @@
         function updatestats() { //update stats on screen
             enemiestxt.innerHTML = ("Enemies: " + currentenemies + "/" + p.EPD);
             moneytxt.innerHTML = ("$" + p.Money);
-            bhtxt.innerHTML = (p.BH + " HP");
+            bhtxt.innerHTML = (p.BH + "/" + ((p.BL * 50) + 150) + " HP");
             xpbar.value = p.XP;
             xptxt.innerHTML = (Math.round(p.XP) + "XP/" + p.NXP + "XP");
             if (p.XP >= p.NXP) {
@@ -582,7 +582,7 @@
                         b.cx = NX;
                         b.cy = NY;
                     } else {
-                        if (p.type == "user") {
+                        if (b.type == "user") {
                             p.TM++;
                         }
                         bullets.splice(i, 1);
@@ -871,7 +871,7 @@
                 p.Money -= (p.BL * 500);
                 p.BL++;
                 p.BH += 50;
-                p.BMH += 50;
+                p.BMH = ((p.BL * 50) + 150);
                 upgradebasebtn.innerHTML = ("Upgrade Base Health<br>$" + (p.BL * 500));
                 updatestats();
             } else {
