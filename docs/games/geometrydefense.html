@@ -239,7 +239,7 @@
             Guns: 1, //number of guns you shoot
             Gunners: 0, //people who shoot for you
             GL: 0, //gunner level
-            GSI: 2000, //gunner shooting interval
+            GSI: 2500, //gunner shooting interval
             GBS: 0.75, //gunner bullet speed
             GFP: 10, //gunner fire power
             GACC: 4, //gunner accuracy
@@ -1006,7 +1006,7 @@
             p.BMH = 200; //max base health
             p.Guns = 1; //number of guns you shoot
             p.Gunners = 0; //people who shoot for you
-            p.GSI = 2000; //gunner shooting interval
+            p.GSI = 2500; //gunner shooting interval
             p.GBS = 0.75; //gunner bullet speed
             p.GFP = 10; //gunner fire power
             p.GACC = 4; //gunner accuracy
@@ -1051,11 +1051,11 @@
         function upgradegunner() {
             let cost = ((p.GL * 150) + 150);
             if (p.Money >= cost) {
-                // GSI: 2000, //gunner shooting interval
+                // GSI: 2500, //gunner shooting interval
                 // GBS: 0.75, //gunner bullet speed
                 // GFP: 10, //gunner fire power
                 // GACC: 4, //gunner accuracy
-                let GSI = (2000 - (p.GL * 10));
+                let GSI = (2500 - (p.GL * 10));
                 let GACC = (4 - (p.GL * 0.2));
                 if (GSI < 250) {
                     GSI = 250;
