@@ -568,7 +568,7 @@
                         b.cy = NY;
                     } else {
                         if (p.type == "user") {
-                            p.TM++; 
+                            p.TM++;
                         }
                         bullets.splice(i, 1);
                     }
@@ -1018,10 +1018,13 @@
             ppbtn.style.display = "block";
             srbtn.style.display = "block";
             gameoverdiv.style.display = "none";
+            daytxt.innerHTML = ("Day: 0");
+            enemiestxt.innerHTML = ("Enemies: 0/0");
             bullets = new Array();
             enemies = new Array();
             clearcanvas();
             updatestats();
+            updatebuttons();
         }
 
         function buygunner() {
