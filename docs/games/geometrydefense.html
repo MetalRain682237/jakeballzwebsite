@@ -338,7 +338,7 @@
         let lvltxt;
         let xptxt;
         let xpbar;
-        let xpm;
+        let xpm; //xp multiplier
 
         let unlocksdiv;
         let unlocksbtn;
@@ -425,6 +425,19 @@
             updatebuttons();
             updatestats();
             daytxt.innerHTML = ("Day: " + p.Day);
+
+            let GSI = (2500 - (p.GL * 10)); //update gunner stats
+            let GACC = (4 - (p.GL * 0.2));
+            if (GSI < 250) {
+                GSI = 250;
+            }
+            if (GACC < 0) {
+                GACC = 0;
+            }
+            p.GSI = GSI;
+            p.GBS = (0.75 + (p.GL * 0.05));
+            p.GFP = (10 + (p.GL * 5));
+            p.GACC = GACC;
         }
 
         function updatebuttons() {
@@ -442,7 +455,7 @@
             upgradegunnerbtn.innerHTML = ("Upgrade Gunner<br>$" + ((p.GL * 150) + 150));
             xpbar.max = p.NXP;
             xpbar.value = p.XP;
-            xptxt.innerHTML = (p.XP + "XP/" + p.NXP + "XP");
+            xptxt.innerHTML = (Math.round(p.XP) + "XP/" + p.NXP + "XP");
             lvltxt.innerHTML = ("Level: " + p.Level);
         }
 
@@ -468,6 +481,7 @@
             if (p.ESR < 100) {
                 p.ESR = 100;
             }
+            xpm = ((p.Day / 100) + 1); //set the xp multiplier
             rungame();
             savebtn.style.display = "none";
         }
@@ -490,7 +504,7 @@
             moneytxt.innerHTML = ("$" + p.Money);
             bhtxt.innerHTML = (p.BH + " HP");
             xpbar.value = p.XP;
-            xptxt.innerHTML = (p.XP + "XP/" + p.NXP + "XP");
+            xptxt.innerHTML = (Math.round(p.XP) + "XP/" + p.NXP + "XP");
             if (p.XP >= p.NXP) {
                 p.NXP += ((Math.ceil(p.Level / 5) * 25) + 25); //set the next level of XP
                 p.Level++;
@@ -833,7 +847,8 @@
                             i2 = bullets.length;
                             if (e.health <= 0) {
                                 p.Money += (e.killearning * p.EM); //add money for kill
-                                p.XP += e.xp; //add XP for kill
+                                p.XP += (e.xp * xpm); //add XP for kill
+                                p.XP = parseFloat(p.XP.toFixed(3));
                                 if (b.type == "user") {
                                     p.TK++;
                                 }
@@ -1023,8 +1038,8 @@
             bullets = new Array();
             enemies = new Array();
             clearcanvas();
-            updatestats();
             updatebuttons();
+            updatestats();
         }
 
         function buygunner() {
@@ -1054,10 +1069,7 @@
         function upgradegunner() {
             let cost = ((p.GL * 150) + 150);
             if (p.Money >= cost) {
-                // GSI: 2500, //gunner shooting interval
-                // GBS: 0.75, //gunner bullet speed
-                // GFP: 10, //gunner fire power
-                // GACC: 4, //gunner accuracy
+                p.GL++;
                 let GSI = (2500 - (p.GL * 10));
                 let GACC = (4 - (p.GL * 0.2));
                 if (GSI < 250) {
@@ -1070,7 +1082,6 @@
                 p.GBS = (0.75 + (p.GL * 0.05));
                 p.GFP = (10 + (p.GL * 5));
                 p.GACC = GACC;
-                p.GL++;
                 p.Money -= cost;
                 upgradegunnerbtn.innerHTML = ("Upgrade Gunner<br>$" + ((p.GL * 150) + 150));
                 updatestats();
