@@ -350,7 +350,7 @@
 
         let MX; //mouse X
         let MY; //mouse Y
-        let interval; //timer
+        var interval; //timer
         let pp = false;
         let lastms = 0;
         let lasttime = 0;
@@ -497,6 +497,7 @@
                 add = 150;
             }
             p.Money += add;
+            updatestats();
         }
 
         function updatestats() { //update stats on screen
