@@ -338,6 +338,7 @@
         let lvltxt;
         let xptxt;
         let xpbar;
+        let xpm;
 
         let unlocksdiv;
         let unlocksbtn;
@@ -439,6 +440,10 @@
                 buygunnerbtn.innerHTML = ("Buy Gunner<br>Max");
             }
             upgradegunnerbtn.innerHTML = ("Upgrade Gunner<br>$" + ((p.GL * 150) + 150));
+            xpbar.max = p.NXP;
+            xpbar.value = p.XP;
+            xptxt.innerHTML = (p.XP + "XP/" + p.NXP + "XP");
+            lvltxt.innerHTML = ("Level: " + p.Level);
         }
 
         function newgame() { //starting a new game
@@ -473,6 +478,11 @@
             srbtn.style.display = "block";
             ppbtn.style.display = "none";
             savebtn.style.display = "block";
+            let add = (p.Day * 5);
+            if (add > 150) {
+                add = 150;
+            }
+            p.Money += add;
         }
 
         function updatestats() { //update stats on screen
