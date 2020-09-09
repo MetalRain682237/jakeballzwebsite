@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Geometry Defense</title>
+</head>
+
+<body id="body" onload="loaded()">
+    <style>
+        .button {
+            position: absolute;
+            background-color: rgb(68, 68, 68);
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 1.25s;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .button:hover {
+            background-color: red;
+            color: white;
+        }
+
+        .buttoncent {
+            position: absolute;
+            background-color: rgb(68, 68, 68);
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            transition-duration: 1.25s;
+            cursor: pointer;
+            border-radius: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .buttoncent:hover {
+            background-color: red;
+            color: white;
+        }
+
+        .p {
+            position: absolute;
+        }
+
+        .pcent {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        ::-moz-progress-bar {
+            background: rgb(82, 235, 52);
+        }
+
+        progress::-webkit-progress-value {
+            background: rgb(82, 235, 52);
+        }
+
+        progress {
+            background: rgb(82, 235, 52);
+            border-radius: 15px;
+        }
+
+        .unlockprogress {
+            position: absolute;
+            background: rgb(82, 235, 52);
+            border-radius: 15px;
+            width: 300px;
+            height: 30px;
+            padding: 0%;
+        }
+
+        .unlocks {
+            height: 50px;
+            width: 100px;
+            position: absolute;
+            background-color: rgb(68, 68, 68);
+            border: none;
+            color: white;
+            padding: 0%;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 1.25s;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .unlocks:hover {
+            background-color: red;
+            color: white;
+        }
+    </style>
+    <canvas id="myCanvas" width="1251" height="601" style="border-block-color: white;"></canvas>
+    <button id="newgame" class="button" style="left: 50px; top: 475px;" onclick="newgame()">New Game</button>
+
+    <p id="title" class="pcent" style="top: 100px; font-size: 100px; display: block; text-align: center;">Geometry
+        Defense</p>
+    <p id="titletext" class="pcent" style="top: 325px; font-size: 25px; display: block; text-align: left;">The geometry
+        gets what it deserves...<br><br>Get to the highest day possible<br>Ability points are earned every 10 levels and
+        never get reset<br>Ability points can be used for upgrades<br>Money and upgrades bought with money restart when
+        you lose</p>
+
+    <button id="pp" class="button" style="left:20px;top:20px;display:none;" onclick="pauseplay()">Pause</button>
+    <button id="sr" class="button" style="left:150px;top:20px;display:none;" onclick="startday()">Start
+        Round</button>
+    <button id="upgradebase" class="button" style="left:1300px;top:150px;display:none;" onclick="upgradebase()">Upgrade
+        Base
+        Health<br>$500</button>
+    <button id="repairbase" class="button" style="left:1300px;top:225px;display:none;" onclick="repairbase()">Repair
+        Base</button>
+    <button id="buybarrel" class="button" style="left:1300px;top:280px;display:none;" onclick="buybarrel()">Buy
+        Gun Barrel<br>$2500</button>
+    <button id="buygunner" class="button" style="left:1300px;top:353.5px;display:none;" onclick="buygunner()">Buy
+        Gunner<br>$500</button>
+    <button id="upgradegunner" class="button" style="left:1300px;top:427px;display:none;"
+        onclick="upgradegunner()">Upgrade Gunner<br>$150</button>
+    <button id="unlocks" class="button" style="left:1300px;top:501px;display:none;" onclick="unlocks()">Unlocks<br>0
+        Ability Points</button>
+
+    <p id="basehealth" class="p" style="left: 1100px; top: 10px; font-size: 25px; display: none; text-align: left;">200
+        HP/200 HP</p>
+    <p id="day" class="p" style="left: 1300px; top: 10px; font-size: 25px; display: none; text-align: left;">Day: 0</p>
+    <p id="enemies" class="p" style="left: 1300px; top: 50px; font-size: 25px; display: none; text-align: left;">
+        Enemies: 0/0</p>
+    <p id="money" class="p" style="left: 1300px; top: 90px; font-size: 25px; display: none; text-align: left;">$25</p>
+
+    <progress class="p" id="xpbar" value="0" max="50"
+        style="left:100px;top:600px;width:60%;height:25px;display:none;"></progress>
+    <p id="lvl" class="p" style="left: 130px; top: 573px; font-size: 25px; display: none;text-align: center;">Level 1
+    </p>
+    <p id="xp" class="p" style="left: 350px; top: 573px; font-size: 25px; display: none;text-align: center;">0XP/25XP
+    </p>
+
+    <div id="unlocksdiv" style="display: none;border: 0%;">
+        <button id="ubtn0" class="unlocks" style="left:100px;top:100px;" onclick="unlock(0)">Fire Rate</button>
+        <button id="ubtn1" class="unlocks" style="left:100px;top:160px;" onclick="unlock(1)">Bullet Speed</button>
+        <button id="ubtn2" class="unlocks" style="left:100px;top:220px;" onclick="unlock(2)">Fire Power</button>
+        <button id="ubtn3" class="unlocks" style="left:100px;top:280px;" onclick="unlock(3)">Earning Multiplier</button>
+        <button id="ubtn4" class="unlocks" style="left:100px;top:340px;" onclick="unlock(4)">Accuracy</button>
+
+        <progress class="unlockprogress" id="ubar0" value="0" max="20" style="left:230px;top:115px;"></progress>
+        <progress class="unlockprogress" id="ubar1" value="0" max="20" style="left:230px;top:175px;"></progress>
+        <progress class="unlockprogress" id="ubar2" value="0" max="20" style="left:230px;top:235px;"></progress>
+        <progress class="unlockprogress" id="ubar3" value="0" max="20" style="left:230px;top:295px;"></progress>
+        <progress class="unlockprogress" id="ubar4" value="0" max="20" style="left:230px;top:355px;"></progress>
+
+        <p id="utxt0" class="p" style="left:240px;top:100px;font-size:20px;text-align: center;">100 | +50</p>
+        <p id="utxt1" class="p" style="left:240px;top:160px;font-size:20px;text-align: center;">0.6 | +0.1</p>
+        <p id="utxt2" class="p" style="left:240px;top:220px;font-size:20px;text-align: center;">1 | +1</p>
+        <p id="utxt3" class="p" style="left:240px;top:280px;font-size:20px;text-align: center;">1 | +0.5</p>
+        <p id="utxt4" class="p" style="left:240px;top:340px;font-size:20px;text-align: center;">5 | +0.25</p>
+    </div>
+
+    <div id="gameoverdiv" style="display: none; left: 50%;">
+        <p id="go" class="pcent" style="top: 100px; font-size: 75px; text-align: center;">GAME OVER</p>
+        <p id="gom" class="pcent" style="top: 250px; font-size: 25px; text-align: center;"></p>
+        <button id="gobtn" class="buttoncent" style="top:350px;" onclick="restart()">Start Over</button>
+    </div>
+
+    <button id="save" class="button" style="display: none;left: 1300px;top: 574px;" onclick="savegame()">Save
+        Game</button>
+    <a id="downloadAnchorElem" style="display:none"></a>
+    <input class="p" type="file" name="inputfile" id="inputfile" style="left: 52px; top: 550px;">
+    <pre id="output"></pre>
+
+    <script type="text/javascript">
+        document.getElementById('inputfile')
+            .addEventListener('change', function () {
+
+                var fr = new FileReader();
+                fr.onload = function () {
+                    let file = fr.result;
+                    let element = document.getElementById('inputfile');
+                    element.parentNode.removeChild(element);
+                    load(file);
+                }
+
+                fr.readAsText(this.files[0]);
+            });
+        function savegame() { //downloads a text file for the user
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(p));
+            var dlAnchorElem = document.getElementById('downloadAnchorElem');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "Shooter.txt");
+            dlAnchorElem.click();
+        }
+    </script>
+
+    <script>
+
+        let p; //main player
+        let newdata = {
+            XP: 0,
+            Level: 1,
+            NXP: 50, //next xp to level up
+            TAP: 0, //total ability points
+            NAP: 10, //next level to gain an ability point
+
+            AP: 0, //ability points
+            SI: 900, //shooting interval (fire rate)
+            SIL: 0,
+            BS: 0.6, //bullet speed
+            BSL: 0,
+            FP: 10, //fire power
+            FPL: 0,
+            EM: 1, //earning multiplier
+            EMLL: 0,
+            ACC: 5, //accuracy
+            ACCL: 0,
+            SL: 0, //start level
+            SLL: 0,
+
+            TK: 0, //total kills
+            TH: 0, //total hits
+            TM: 0, //total missess
+            TDP: 0, //total days played
+            HD: 0, //highest day
+
+            Day: 0,
+            Money: 25,
+            BH: 200, //base health
+            BL: 1, //base level
+            BMH: 200, //max base health
+            Guns: 1, //number of guns you shoot
+            Gunners: 0, //people who shoot for you
+            GL: 0, //gunner level
+            GSI: 2500, //gunner shooting interval
+            GBS: 0.75, //gunner bullet speed
+            GFP: 10, //gunner fire power
+            GACC: 4, //gunner accuracy
+
+            EPD: 25, //enemies per day
+            ESR: 2500, //enemy spawn rate
+            EML: 1 //enemy max level
+        }
+
+        const enemyarray = {
+            "E0": {
+                health: 10,
+                MH: 10,
+                damage: 10,
+                speed: 0.05,
+                color: "black",
+                size: 20,
+                killearning: 1,
+                xp: 1,
+                cx: 0,
+                cy: 0,
+                id: -1
+            },
+            "E1": {
+                health: 20,
+                MH: 20,
+                damage: 20,
+                speed: 0.05,
+                color: "red",
+                size: 20,
+                killearning: 2,
+                xp: 2,
+                cx: 0,
+                cy: 0,
+                id: -1
+            },
+            "E2": {
+                health: 10,
+                MH: 10,
+                damage: 10,
+                speed: 0.1,
+                color: "lime",
+                size: 20,
+                killearning: 2,
+                xp: 3,
+                cx: 0,
+                cy: 0,
+                id: -1
+            },
+            "E3": {
+                health: 150,
+                MH: 150,
+                damage: 100,
+                speed: 0.03,
+                color: "black",
+                size: 60,
+                killearning: 10,
+                xp: 12,
+                cx: 0,
+                cy: 0,
+                id: -1
+            },
+            "E4": {
+                health: 100,
+                MH: 150,
+                damage: 50,
+                speed: 0.075,
+                color: "orange",
+                size: 20,
+                killearning: 15,
+                xp: 15,
+                cx: 0,
+                cy: 0,
+                id: -1
+            }
+        }
+
+        let canvas = document.getElementById("myCanvas");
+        let ctx = canvas.getContext("2d");
+        ctx.lineWidth = 3;
+        let savebtn;
+        let newgamebtn;
+        let inputbtn;
+        let ppbtn;
+        let srbtn;
+        let upgradebasebtn;
+        let repairbtn;
+        let buybarrelbtn;
+        let buygunnerbtn;
+        let upgradegunnerbtn;
+
+        let daytxt;
+        let enemiestxt;
+        let moneytxt;
+        let bhtxt;
+        let lvltxt;
+        let xptxt;
+        let xpbar;
+        let xpm; //xp multiplier
+
+        let unlocksdiv;
+        let unlocksbtn;
+
+        let gameoverdiv;
+        let gotxt;
+        let gomtxt;
+        let gobtn;
+
+        let MX; //mouse X
+        let MY; //mouse Y
+        var interval; //timer
+        let pp = false;
+        let lastms = 0;
+        let lasttime = 0;
+
+        let shoottime = 0;
+        let bid = 0; //bullet id
+
+        let gunnershoottime = 0;
+
+        let spawntime = 0;
+        let lefttospawn = 0; //enemies left to spawn in the day
+        let currentenemies = 0;
+        let ML; //max level
+
+        let bulletspeed = 10;
+
+        let bullets = new Array();
+        let enemies = new Array();
+
+        function loaded() {
+            savebtn = document.getElementById("save");
+            newgamebtn = document.getElementById("newgame");
+            inputbtn = document.getElementById("inputfile");
+            daytxt = document.getElementById("day");
+            enemiestxt = document.getElementById("enemies");
+            moneytxt = document.getElementById("money");
+            ppbtn = document.getElementById("pp");
+            srbtn = document.getElementById("sr");
+            bhtxt = document.getElementById("basehealth");
+            upgradebasebtn = document.getElementById("upgradebase");
+            repairbtn = document.getElementById("repairbase");
+            buybarrelbtn = document.getElementById("buybarrel");
+            unlocksbtn = document.getElementById("unlocks");
+            xpbar = document.getElementById("xpbar");
+            lvltxt = document.getElementById("lvl");
+            xptxt = document.getElementById("xp");
+            unlocksdiv = document.getElementById("unlocksdiv");
+            gameoverdiv = document.getElementById("gameoverdiv");
+            gotxt = document.getElementById("go");
+            gomtxt = document.getElementById("gom");
+            gobtn = document.getElementById("gobtn");
+            buygunnerbtn = document.getElementById("buygunner");
+            upgradegunnerbtn = document.getElementById("upgradegunner");
+        }
+
+        function load(file) { //load file from system
+            p = JSON.parse(file);
+            start();
+        }
+
+        function start() {
+            newgamebtn.style.display = "none";
+            inputbtn.style.display = "none";
+
+            savebtn.style.display = "block";
+            daytxt.style.display = "block";
+            enemiestxt.style.display = "block";
+            moneytxt.style.display = "block";
+            srbtn.style.display = "block";
+            bhtxt.style.display = "block";
+            upgradebasebtn.style.display = "block";
+            repairbtn.style.display = "block";
+            buybarrelbtn.style.display = "block";
+            unlocksbtn.style.display = "block";
+            buygunnerbtn.style.display = "block";
+            upgradegunnerbtn.style.display = "block";
+            xpbar.style.display = "block";
+            lvltxt.style.display = "block";
+            xptxt.style.display = "block";
+            document.getElementById("title").style.display = "none";
+            document.getElementById("titletext").style.display = "none";
+            updatebuttons();
+            updatestats();
+            daytxt.innerHTML = ("Day: " + p.Day);
+
+            let GSI = (2500 - (p.GL * 10)); //update gunner stats
+            let GACC = (4 - (p.GL * 0.2));
+            if (GSI < 250) {
+                GSI = 250;
+            }
+            if (GACC < 0) {
+                GACC = 0;
+            }
+            p.GSI = GSI;
+            p.GBS = (0.75 + (p.GL * 0.05));
+            p.GFP = (10 + (p.GL * 5));
+            p.GACC = GACC;
+        }
+
+        function updatebuttons() {
+            upgradebasebtn.innerHTML = ("Upgrade Base Health<br>$" + (p.BL * 500));
+            if (p.Guns == 2) {
+                buybarrelbtn.innerHTML = ("Buy Barrel<br>$10000");
+            } else if (p.Guns == 3) {
+                buybarrelbtn.innerHTML = ("Buy Barrel<br>Max");
+            }
+            if (p.Gunners == 1) {
+                buygunnerbtn.innerHTML = ("Buy Gunner<br>$2500");
+            } else if (p.Gunners == 2) {
+                buygunnerbtn.innerHTML = ("Buy Gunner<br>Max");
+            }
+            upgradegunnerbtn.innerHTML = ("Upgrade Gunner<br>$" + ((p.GL * 150) + 150));
+            xpbar.max = p.NXP;
+            xpbar.value = p.XP;
+            xptxt.innerHTML = (Math.round(p.XP) + "XP/" + p.NXP + "XP");
+            lvltxt.innerHTML = ("Level: " + p.Level);
+        }
+
+        function newgame() { //starting a new game
+            p = newdata;
+            start();
+        }
+
+        function startday() {
+            p.Day++;
+            p.TDP++;
+            daytxt.innerHTML = ("Day: " + p.Day);
+            lefttospawn = p.EPD;
+            currentenemies = p.EPD;
+            srbtn.style.display = "none";
+            ppbtn.style.display = "block";
+            ML = (Math.floor(p.Day / 10) + 1);
+            if (ML > 5) {
+                ML = 5;
+            }
+            p.EPD = ((p.Day * 5) + 20); //add 5 more enemies to each day
+            p.ESR = (2510 - (p.Day * 10)); //make the spawn interval 25ms less
+            if (p.ESR < 100) {
+                p.ESR = 100;
+            }
+            xpm = ((p.Day / 50) + 1); //set the xp multiplier
+            rungame();
+            savebtn.style.display = "none";
+        }
+
+        function endday() {
+            clearcanvas();
+            clearInterval(interval);
+            srbtn.style.display = "block";
+            ppbtn.style.display = "none";
+            savebtn.style.display = "block";
+            let add = (p.Day * 5);
+            if (add > 150) {
+                add = 150;
+            }
+            p.Money += add;
+            updatestats();
+        }
+
+        function updatestats() { //update stats on screen
+            enemiestxt.innerHTML = ("Enemies: " + currentenemies + "/" + p.EPD);
+            moneytxt.innerHTML = ("$" + p.Money);
+            bhtxt.innerHTML = (p.BH + "/" + ((p.BL * 50) + 150) + " HP");
+            xpbar.value = p.XP;
+            xptxt.innerHTML = (Math.round(p.XP) + "XP/" + p.NXP + "XP");
+            if (p.XP >= p.NXP) {
+                p.NXP += ((Math.ceil(p.Level / 5) * 25) + 25); //set the next level of XP
+                p.Level++;
+                lvltxt.innerHTML = ("Level: " + p.Level);
+                xpbar.max = p.NXP;
+                p.Money += (p.Level * 10 * p.EM);
+                if (p.Level == p.NAP) {
+                    p.NAP += 10;
+                    p.AP++;
+                    unlocksbtn.innerHTML = ("Unlocks<br>" + p.AP + " Ability Points");
+                }
+            }
+        }
+
+        function rungame() { //has a timer to run the game
+            interval = setInterval(() => {
+                let ms = performance.now();
+                let delta = (ms - lastms);
+
+                clearcanvas();
+                moveenemies(ms, lastms, delta);
+                drawbarrel(MX, MY);
+                movebullets(ms, lastms, delta);
+                checkhit();
+                updatestats();
+                lastms = ms;
+                if (ms > shoottime) {
+                    shoot(MX, MY);
+                    shoottime = (ms + p.SI);
+                }
+                if ((p.Gunners > 0) && (ms > gunnershoottime)) {
+                    gunnershoot();
+                    gunnershoottime = (ms + p.GSI);
+                }
+                if ((ms > spawntime) && (lefttospawn > 0)) {
+                    spawnenemy();
+                    spawntime = (ms + p.ESR);
+                    lefttospawn--;
+                }
+                if (currentenemies <= 0) {
+                    endday();
+                }
+
+            }, 2);
+        }
+
+        function pauseplay() {
+            if (pp == false) {
+                clearInterval(interval);
+                pp = true;
+                ppbtn.innerHTML = "Play";
+            } else {
+                lastms = performance.now();
+                rungame();
+                pp = false;
+                ppbtn.innerHTML = "Pause"
+            }
+        }
+
+        function movebullets(ms, lms, delta) { //moves bullets across the screen
+            if (bullets.length > 0) {
+                for (let i = 0; i < bullets.length; i++) {
+                    let b = bullets[i]; //get the bullet
+                    if ((b.cx > 0) && (b.cy > 0) && (b.cy < canvas.height)) {
+                        let NX = (b.cx - (b.bs * delta));
+                        let NY = (b.cy + (b.yr * b.bs * delta));
+
+                        ctx.beginPath();
+                        ctx.strokeStyle = "orange";
+                        ctx.moveTo(b.cx, b.cy);
+                        ctx.lineTo(NX, NY);
+                        ctx.stroke();
+                        ctx.closePath();
+                        b.cx = NX;
+                        b.cy = NY;
+                    } else {
+                        if (b.type == "user") {
+                            p.TM++;
+                        }
+                        bullets.splice(i, 1);
+                    }
+                }
+            }
+        }
+
+        function moveenemies(ms, lms, delta) {
+            if (enemies.length > 0) {
+                for (let i = 0; i < enemies.length; i++) {
+                    let e = enemies[i];
+                    if (e.cx < (canvas.width - 20)) {
+                        let NX = (e.cx + (e.speed * delta));
+                        drawenemy(NX, e.cy, e);
+                        e.cx = NX;
+                    } else {
+                        enemies.splice(i, 1);
+                        i--;
+                        p.BH -= e.damage;
+                        currentenemies--;
+                        if (p.BH <= 0) {
+                            gameover();
+                        }
+                    }
+                }
+            }
+        }
+
+        function drawenemy(x, y, e) {
+            ctx.fillStyle = e.color;
+            ctx.beginPath();
+            ctx.rect(x, y, e.size, e.size);
+            ctx.fill();
+            ctx.closePath();
+            if ((e.MH > p.FP) || ((p.Gunners > 0) && (e.MH > p.GFP))) { //if the enemy started with more then 1 health point
+                let size = e.size;
+                let green = Math.round((e.health / e.MH) * size);
+
+                ctx.beginPath(); //green part of health bar
+                ctx.strokeStyle = "green";
+                ctx.moveTo(x, (y - 10));
+                ctx.lineTo((x + green), (y - 10));
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.beginPath(); //red part of health bar
+                ctx.strokeStyle = "red";
+                ctx.moveTo((x + green), (y - 10));
+                ctx.lineTo((x + e.size), (y - 10));
+                ctx.stroke();
+                ctx.closePath();
+            }
+        }
+
+        function getMousePos(canvas, evt) {
+            var rect = canvas.getBoundingClientRect();
+            return {
+                x: evt.clientX - rect.left,
+                y: evt.clientY - rect.top
+            }
+        }
+
+        canvas.addEventListener('mousemove', function (evt) {
+            let ms = performance.now();
+            if (ms < lasttime) {
+                return;
+            }
+            let mouse = getMousePos(canvas, evt);
+            MX = mouse.x;
+            MY = mouse.y;
+            lasttime = (ms + 10);
+
+        }, false);
+
+        function drawbarrel(x, y) {
+            if (x > (canvas.width - 20)) {
+                x = canvas.width - 20;
+            }
+            let rise = ((y - (canvas.height / 2)) / (canvas.width - x));
+            let rise2 = ((y - (canvas.height * (2 / 7))) / (canvas.width - x));
+            let rise3 = ((y - (canvas.height * (5 / 7))) / (canvas.width - x));
+            if (p.Guns >= 1) {
+                ctx.beginPath();
+                ctx.strokeStyle = "black";
+                ctx.moveTo((canvas.width), (canvas.height / 2));
+                ctx.lineTo((canvas.width - 20), ((canvas.height / 2) + (rise * 20)));
+                ctx.stroke();
+                ctx.closePath();
+            }
+            if (p.Guns >= 2) {
+                ctx.beginPath();
+                ctx.strokeStyle = "black";
+                ctx.moveTo((canvas.width), (canvas.height * (2 / 7)));
+                ctx.lineTo((canvas.width - 20), ((canvas.height * (2 / 7)) + (rise2 * 20)));
+                ctx.stroke();
+                ctx.closePath();
+            }
+            if (p.Guns >= 3) {
+                ctx.beginPath();
+                ctx.strokeStyle = "black";
+                ctx.moveTo((canvas.width), (canvas.height * (5 / 7)));
+                ctx.lineTo((canvas.width - 20), ((canvas.height * (5 / 7)) + (rise3 * 20)));
+                ctx.stroke();
+                ctx.closePath();
+            }
+            if (p.Gunners > 0) {
+                let es = getenemies();
+                if (es[0] == -1) return;
+
+                let first = enemies[es[0]];
+                let second = es[1];
+                let rise4 = ((first.cy - (canvas.height * (1 / 5))) / (canvas.width - first.cx));
+                let rise5;
+
+                if (es[1] != -1) {
+                    second = enemies[es[1]];
+                    rise5 = ((second.cy - (canvas.height * (4 / 5))) / (canvas.width - second.cx));
+                }
+
+                if (p.Gunners >= 1) { //if at least one gunner
+                    ctx.beginPath();
+                    ctx.strokeStyle = "black";
+                    ctx.moveTo((canvas.width), (canvas.height * (1 / 5)));
+                    ctx.lineTo((canvas.width - 20), ((canvas.height * (1 / 5)) + (rise4 * 20)));
+                    ctx.stroke();
+                    ctx.closePath();
+                }
+                if ((p.Gunners >= 2) && (es[1] != -1)) { //if at least two gunners
+                    ctx.beginPath();
+                    ctx.strokeStyle = "black";
+                    ctx.moveTo((canvas.width), (canvas.height * (4 / 5)));
+                    ctx.lineTo((canvas.width - 20), ((canvas.height * (4 / 5)) + (rise5 * 20)));
+                    ctx.stroke();
+                    ctx.closePath();
+                }
+            }
+        }
+
+        function shoot(x, y) { //make a new bullet
+            if (x > (canvas.width - 20)) {
+                x = canvas.width - 20;
+            }
+            let rise = ((y - (canvas.height / 2)) / (canvas.width - x));
+            let rise2 = ((y - (canvas.height * (2 / 7))) / (canvas.width - x));
+            let rise3 = ((y - (canvas.height * (5 / 7))) / (canvas.width - x));
+
+            let pm = Math.random();
+            if (pm > 0.5) {
+                rise -= (Math.random() * (p.ACC / 90));
+                rise2 -= (Math.random() * (p.ACC / 90));
+                rise3 -= (Math.random() * (p.ACC / 90));
+            } else {
+                rise += (Math.random() * (p.ACC / 90));
+                rise2 += (Math.random() * (p.ACC / 90));
+                rise3 += (Math.random() * (p.ACC / 90));
+            }
+
+            if (p.Guns >= 1) {
+                bid++;
+                if (bid > 100) {
+                    bid = 0;
+                }
+                let bullet = {
+                    cx: canvas.width, //current X
+                    cy: (canvas.height / 2), //current Y
+                    yr: rise, //Y rise
+                    bs: p.BS, //bullet speed
+                    id: bid,
+                    type: "user"
+                }
+                bullets.push(bullet);
+            }
+            if (p.Guns >= 2) {
+                bid++;
+                if (bid > 100) {
+                    bid = 0;
+                }
+                let bullet = {
+                    cx: canvas.width, //current X
+                    cy: (canvas.height * (2 / 7)), //current Y
+                    yr: rise2, //Y rise
+                    bs: p.BS, //bullet speed
+                    id: bid,
+                    type: "user"
+                }
+                bullets.push(bullet);
+            }
+            if (p.Guns >= 3) {
+                bid++;
+                if (bid > 100) {
+                    bid = 0;
+                }
+                let bullet = {
+                    cx: canvas.width, //current X
+                    cy: (canvas.height * (5 / 7)), //current Y
+                    yr: rise3, //Y rise
+                    bs: p.BS, //bullet speed
+                    id: bid,
+                    type: "user"
+                }
+                bullets.push(bullet);
+            }
+        }
+
+        function spawnenemy() {
+            let SY = Math.round(Math.random() * (canvas.height / 1.2));
+            SY += 50;
+
+            let rng = Math.floor(Math.random() * ML); //what enemy to spawn
+            let rng2 = Math.random(); //make it more common for lower level troops
+            if (rng2 < 0.5) {
+                rng--;
+            } else if (rng2 < 0.75) {
+                rng -= 2;
+            }
+            if (rng < 0) {
+                rng = 0;
+            }
+            let e;
+
+            if (rng == 0) {
+                e = JSON.parse(JSON.stringify(enemyarray.E0));
+            } else if (rng == 1) {
+                e = JSON.parse(JSON.stringify(enemyarray.E1));
+            } else if (rng == 2) {
+                e = JSON.parse(JSON.stringify(enemyarray.E2));
+            } else if (rng == 3) {
+                e = JSON.parse(JSON.stringify(enemyarray.E3));
+            } else if (rng == 4) {
+                e = JSON.parse(JSON.stringify(enemyarray.E4));
+            }
+            e.cy = SY;
+
+            enemies.push(e);
+        }
+
+        function clearcanvas() { //make the canvas white
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function checkhit() {
+            for (let i = 0; i < enemies.length; i++) {
+                let e = enemies[i];
+                let EX = e.cx;
+                let EY = e.cy;
+                for (let i2 = 0; i2 < bullets.length; i2++) {
+                    let b = bullets[i2];
+                    let BX = b.cx;
+                    let BY = b.cy;
+                    if ((BX > EX) && (BX < (EX + e.size)) && (BY > EY) && (BY < (EY + e.size))) {
+                        if (e.id != b.id) {
+                            e.health -= p.FP;
+                            if (b.type == "user") {
+                                p.TH++;
+                            }
+                            e.id = -1;
+                            bullets.splice(i2, 1);
+                            i2 = bullets.length;
+                            if (e.health <= 0) {
+                                p.Money += (e.killearning * p.EM); //add money for kill
+                                p.XP += (e.xp * xpm); //add XP for kill
+                                p.XP = parseFloat(p.XP.toFixed(3));
+                                if (b.type == "user") {
+                                    p.TK++;
+                                }
+                                currentenemies--;
+                                enemies.splice(i, 1);
+                                i--;
+                                i2 = bullets.length;
+                            } else {
+                                e.id = b.id;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function upgradebase() {
+            if (p.Money > (p.BL * 500)) {
+                p.Money -= (p.BL * 500);
+                p.BL++;
+                p.BH += 50;
+                p.BMH = ((p.BL * 50) + 150);
+                upgradebasebtn.innerHTML = ("Upgrade Base Health<br>$" + (p.BL * 500));
+                updatestats();
+            } else {
+                alert("Not enough money!");
+            }
+        }
+
+        function repairbase() {
+            if (p.Money == 0) {
+                alert("Not enough money!");
+                return;
+            }
+            if (p.BH == p.BMH) {
+                alert("Health already max!");
+                return;
+            }
+            if (p.Money < (p.BMH - p.BH)) {
+                p.BH += (p.Money);
+                p.Money = 0;
+            } else {
+                let sub = (p.BMH - p.BH);
+                p.BH = p.BMH;
+                p.Money -= sub;
+            }
+            updatestats();
+        }
+
+        function buybarrel() {
+            let cost;
+            if (p.Guns == 1) {
+                cost = 2500;
+            } else if (p.Guns == 2) {
+                cost = 10000;
+            } else {
+                return;
+            }
+            if (p.Money >= cost) {
+                p.Guns++;
+                if (p.Guns == 2) {
+                    buybarrelbtn.innerHTML = ("Buy Barrel<br>$10000");
+                } else {
+                    buybarrelbtn.innerHTML = ("Buy Barrel<br>Max");
+                }
+            } else {
+                alert("You don't have enough money!");
+            }
+        }
+
+        function unlocks() {
+            if (pp == false) {
+                pauseplay();
+            }
+            if (xpbar.style.display == "block") { //unlocks not shown
+                xpbar.style.display = "none";
+                xptxt.style.display = "none";
+                lvltxt.style.display = "none";
+                unlocksdiv.style.display = "block";
+                document.getElementById("utxt0").innerHTML = ((1000 - p.SI) + " | +50");
+                document.getElementById("ubar0").value = p.SIL;
+                document.getElementById("utxt1").innerHTML = (p.BS + " | +0.1");
+                document.getElementById("ubar1").value = p.BSL;
+                document.getElementById("utxt2").innerHTML = (p.FP + " | +1");
+                document.getElementById("ubar2").value = p.FPL;
+                document.getElementById("utxt3").innerHTML = (p.EM + " | +0.5");
+                document.getElementById("ubar3").value = p.EMLL;
+                document.getElementById("utxt4").innerHTML = (10 - p.ACC + " | +0.25");
+                document.getElementById("ubar4").value = p.ACCL;
+            } else { //unlocks shown
+                xpbar.style.display = "block";
+                xptxt.style.display = "block";
+                lvltxt.style.display = "block";
+                unlocksdiv.style.display = "none";
+            }
+        }
+
+        function unlock(int) { //when a unlock button is pressed
+            let bar = document.getElementById("ubar" + int);
+            if (p.AP > 0) {
+                if (bar.value == 20) {
+                    alert("Unlock Maxed Out!");
+                    return;
+                }
+                p.AP--;
+                bar.value++;
+                unlocksbtn.innerHTML = ("Unlocks<br>" + p.AP + " Ability Points");
+                addability(int);
+            } else {
+                alert("No ability points!");
+            }
+        }
+
+        function addability(int) {
+            let utxt = document.getElementById("utxt" + int);
+            switch (int) {
+                case 0: //shooting interval (fire rate)
+                    p.SI -= 50;
+                    p.SIL++;
+                    utxt.innerHTML = ((1000 - p.SI) + " | +50");
+                    break;
+                case 1://bullet speed
+                    p.BS += 0.1;
+                    p.BSL++;
+                    utxt.innerHTML = (p.BS + " | +0.1");
+                    break;
+                case 2: //fire power
+                    p.FP++;
+                    p.FPL++;
+                    utxt.innerHTML = (p.FP + " | +1");
+                    break;
+                case 3: //earning multiplier
+                    p.EM += 0.5;
+                    p.EMLL++;
+                    utxt.innerHTML = (p.EM + " | +0.5");
+                    break;
+                case 4: //accuracy
+                    p.ACC -= 0.25;
+                    p.ACCL++;
+                    utxt.innerHTML = (10 - p.ACC + " | +0.25");
+                    break;
+            }
+        }
+
+        function gameover() {
+            clearInterval(interval);
+            ppbtn.style.display = "none";
+            srbtn.style.display = "none";
+            gameoverdiv.style.display = "block";
+            if (p.Day > p.HD) {
+                p.HD = p.Day;
+                gomtxt.innerHTML = ("You made it to day " + p.Day + "!<br>That was your best!");
+            } else {
+                gomtxt.innerHTML = ("You made it to day " + p.Day + "!");
+            }
+
+            ctx.fillStyle = "white"; //fill in the canvas by the text
+            ctx.beginPath();
+            ctx.rect(475, 175, 600, 250);
+            ctx.fill();
+            ctx.closePath();
+
+        }
+
+        function restart() {
+            p.Day = 0;
+            p.Money = 25;
+            p.BH = 10; //base health
+            p.BL = 1; //base level
+            p.BMH = 200; //max base health
+            p.Guns = 1; //number of guns you shoot
+            p.Gunners = 0; //people who shoot for you
+            p.GSI = 2500; //gunner shooting interval
+            p.GBS = 0.75; //gunner bullet speed
+            p.GFP = 10; //gunner fire power
+            p.GACC = 4; //gunner accuracy
+
+            p.EPD = 25; //enemies per day
+            p.ESR = 2500; //enemy spawn rate
+            p.EML = 1; //enemy max level
+
+            ppbtn.style.display = "block";
+            srbtn.style.display = "block";
+            gameoverdiv.style.display = "none";
+            daytxt.innerHTML = ("Day: 0");
+            enemiestxt.innerHTML = ("Enemies: 0/0");
+            bullets = new Array();
+            enemies = new Array();
+            clearcanvas();
+            updatebuttons();
+            updatestats();
+        }
+
+        function buygunner() {
+            let cost;
+            if (p.Gunners == 0) {
+                cost = 500;
+            } else if (p.Gunners == 1) {
+                cost = 2500;
+            } else {
+                alert("Max gunners bought!");
+                return;
+            }
+            if (p.Money >= cost) {
+                p.Gunners++;
+                p.Money -= cost;
+                if (p.Gunners == 1) {
+                    buygunnerbtn.innerHTML = ("Buy Gunner<br>$2500");
+                } else {
+                    buygunnerbtn.innerHTML = ("Buy Gunner<br>Max");
+                }
+                updatestats();
+            } else {
+                alert("Not enough money!");
+            }
+        }
+
+        function upgradegunner() {
+            let cost = ((p.GL * 150) + 150);
+            if (p.Money >= cost) {
+                p.GL++;
+                let GSI = (2500 - (p.GL * 10));
+                let GACC = (4 - (p.GL * 0.2));
+                if (GSI < 250) {
+                    GSI = 250;
+                }
+                if (GACC < 0) {
+                    GACC = 0;
+                }
+                p.GSI = GSI;
+                p.GBS = (0.75 + (p.GL * 0.05));
+                p.GFP = (10 + (p.GL * 5));
+                p.GACC = GACC;
+                p.Money -= cost;
+                upgradegunnerbtn.innerHTML = ("Upgrade Gunner<br>$" + ((p.GL * 150) + 150));
+                updatestats();
+            } else {
+                alert("Not enough money!");
+            }
+        }
+
+        function getenemies() {
+            if (enemies.length == 0) return [-1, -1]; //don't do anything if there are no enemies on the screen
+
+            let first = -1;
+            let second = -1;
+            let FX = 0;
+            let SX = 0;
+
+            for (let i = 0; i < enemies.length; i++) {
+                let x = enemies[i].cx;
+                let y = enemies[i].cy;
+                if (x < canvas.width - 20) {
+                    if (x > FX) {
+                        if (first != -1) {
+                            second = first;
+                            SX = FX;
+                            first = i;
+                            FX = x;
+                        } else {
+                            first = i;
+                            FX = x;
+                        }
+                    } else if (x > SX) {
+                        second = i;
+                        SX = x;
+                    }
+                }
+                if (i == (enemies.length - 1)) {
+                    return [first, second];
+                }
+            }
+        }
+
+        function gunnershoot() {
+            let es = getenemies();
+            let first = es[0];
+            let second = es[1];
+
+            if (first == -1) return; //return if no enemies
+
+            let e1 = enemies[first];
+            let factor = (1800 * ((canvas.width - e1.cx) / canvas.width));
+
+            bid++;
+            if (bid > 100) {
+                bid = 0;
+            }
+
+            let rise = ((e1.cy + (e1.size / 2) - (canvas.height * (1 / 5))) / (canvas.width - e1.cx - (e1.speed * p.GBS * factor)));
+            let pm = Math.random();
+            if (pm > 0.5) {
+                rise -= (Math.random() * (p.GACC / 90));
+            } else {
+                rise += (Math.random() * (p.GACC / 90));
+            }
+            let bullet = {
+                cx: canvas.width, //current X
+                cy: (canvas.height * (1 / 5)), //current Y
+                yr: rise, //Y rise
+                bs: p.GBS, //bullet speed
+                id: bid,
+                type: "gunner"
+            }
+            bullets.push(bullet);
+
+            if (p.Gunners >= 2) {
+                let e2;
+                let factor2;
+
+                if (second != -1) {
+                    e2 = enemies[second];
+                } else {
+                    e2 = enemies[first];
+                }
+
+                factor2 = (1800 * ((canvas.width - e2.cx) / canvas.width));
+
+                bid++;
+                if (bid > 100) {
+                    bid = 0;
+                }
+
+                let rise2 = ((e2.cy + (e2.size / 2) - (canvas.height * (4 / 5))) / (canvas.width - e2.cx - (e2.speed * p.GBS * factor2)));
+                let pm2 = Math.random();
+                if (pm2 > 0.5) {
+                    rise2 -= (Math.random() * (p.GACC / 90));
+                } else {
+                    rise2 += (Math.random() * (p.GACC / 90));
+                }
+                let bullet2 = {
+                    cx: canvas.width, //current X
+                    cy: (canvas.height * (4 / 5)), //current Y
+                    yr: rise2, //Y rise
+                    bs: p.GBS, //bullet speed
+                    id: bid,
+                    type: "gunner"
+                }
+                bullets.push(bullet2);
+            }
+        }
+    </script>
+    </script>
+</body>
+
+</html>
