@@ -196,7 +196,7 @@
             var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(p));
             var dlAnchorElem = document.getElementById('downloadAnchorElem');
             dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", "Shooter.txt");
+            dlAnchorElem.setAttribute("download", "geometrydefense.txt");
             dlAnchorElem.click();
         }
     </script>
@@ -228,6 +228,9 @@
             TK: 0, //total kills
             TH: 0, //total hits
             TM: 0, //total missess
+            TGK: 0, //total gunner kills
+            TGH: 0, //total gunner hits
+            TGM: 0, //total gunner missess
             TDP: 0, //total days played
             HD: 0, //highest day
 
@@ -319,7 +322,6 @@
 
         let canvas = document.getElementById("myCanvas");
         let ctx = canvas.getContext("2d");
-        ctx.lineWidth = 3;
         let savebtn;
         let newgamebtn;
         let inputbtn;
@@ -574,7 +576,8 @@
                         let NY = (b.cy + (b.yr * b.bs * delta));
 
                         ctx.beginPath();
-                        ctx.strokeStyle = "orange";
+                        ctx.lineWidth = 4;
+                        ctx.strokeStyle = "black";
                         ctx.moveTo(b.cx, b.cy);
                         ctx.lineTo(NX, NY);
                         ctx.stroke();
@@ -584,6 +587,8 @@
                     } else {
                         if (b.type == "user") {
                             p.TM++;
+                        } else {
+                            p.TGM++;
                         }
                         bullets.splice(i, 1);
                     }
@@ -667,6 +672,7 @@
             let rise3 = ((y - (canvas.height * (5 / 7))) / (canvas.width - x));
             if (p.Guns >= 1) {
                 ctx.beginPath();
+                ctx.lineWidth = 5;
                 ctx.strokeStyle = "black";
                 ctx.moveTo((canvas.width), (canvas.height / 2));
                 ctx.lineTo((canvas.width - 20), ((canvas.height / 2) + (rise * 20)));
@@ -675,6 +681,7 @@
             }
             if (p.Guns >= 2) {
                 ctx.beginPath();
+                ctx.lineWidth = 5;
                 ctx.strokeStyle = "black";
                 ctx.moveTo((canvas.width), (canvas.height * (2 / 7)));
                 ctx.lineTo((canvas.width - 20), ((canvas.height * (2 / 7)) + (rise2 * 20)));
@@ -683,6 +690,7 @@
             }
             if (p.Guns >= 3) {
                 ctx.beginPath();
+                ctx.lineWidth = 5;
                 ctx.strokeStyle = "black";
                 ctx.moveTo((canvas.width), (canvas.height * (5 / 7)));
                 ctx.lineTo((canvas.width - 20), ((canvas.height * (5 / 7)) + (rise3 * 20)));
@@ -705,6 +713,7 @@
 
                 if (p.Gunners >= 1) { //if at least one gunner
                     ctx.beginPath();
+                    ctx.lineWidth = 5;
                     ctx.strokeStyle = "black";
                     ctx.moveTo((canvas.width), (canvas.height * (1 / 5)));
                     ctx.lineTo((canvas.width - 20), ((canvas.height * (1 / 5)) + (rise4 * 20)));
@@ -713,6 +722,7 @@
                 }
                 if ((p.Gunners >= 2) && (es[1] != -1)) { //if at least two gunners
                     ctx.beginPath();
+                    ctx.lineWidth = 5;
                     ctx.strokeStyle = "black";
                     ctx.moveTo((canvas.width), (canvas.height * (4 / 5)));
                     ctx.lineTo((canvas.width - 20), ((canvas.height * (4 / 5)) + (rise5 * 20)));
@@ -842,6 +852,8 @@
                             e.health -= p.FP;
                             if (b.type == "user") {
                                 p.TH++;
+                            } else {
+                                p.TGH++;
                             }
                             e.id = -1;
                             bullets.splice(i2, 1);
@@ -852,6 +864,8 @@
                                 p.XP = parseFloat(p.XP.toFixed(3));
                                 if (b.type == "user") {
                                     p.TK++;
+                                } else {
+                                    p.TGK++;
                                 }
                                 currentenemies--;
                                 enemies.splice(i, 1);
