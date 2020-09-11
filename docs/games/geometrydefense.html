@@ -250,7 +250,7 @@
             GL: 0, //gunner level
             GSI: 2500, //gunner shooting interval
             GBS: 0.5, //gunner bullet speed
-            GFP: 5, //gunner fire power
+            GFP: 10, //gunner fire power
             GACC: 4, //gunner accuracy
             GARP: 0, //gunner armor piercing
             GARPL: 0, //gunner armor piercing level
@@ -315,6 +315,7 @@
         var interval; //timer
         let pp = false;
         let leveling = false;
+        let bossspawned = false;
         let lastms = 0;
         let lasttime = 0;
 
@@ -409,7 +410,7 @@
             }
             p.GSI = GSI;
             p.GBS = (0.5 + (p.GL * 0.025));
-            p.GFP = (5 + (p.GL * 2.5));
+            p.GFP = (10 + (p.GL * 2.5));
             p.GACC = GACC;
         }
 
@@ -464,6 +465,7 @@
                 currentenemies++;
             }
             xpm = ((p.Day / 50) + 1); //set the xp multiplier
+            bossspawned = false;
             rungame();
             savebtn.style.display = "none";
         }
@@ -496,7 +498,6 @@
         }
 
         function rungame() { //has a timer to run the game
-            let bossspawned = false;
             interval = setInterval(() => {
                 let ms = performance.now();
                 let delta = (ms - lastms);
@@ -894,7 +895,7 @@
                                     damage = (p.GFP * 2);
                                     console.log("Crit!");
                                 } else {
-                                    damage = P.GFP;
+                                    damage = p.GFP;
                                 }
                                 e.health -= (damage - ((e.armor / 100) * p.GFP));
                             }
@@ -1210,7 +1211,7 @@
                 }
                 p.GSI = GSI;
                 p.GBS = (0.5 + (p.GL * 0.025));
-                p.GFP = (5 + (p.GL * 2.5));
+                p.GFP = (10 + (p.GL * 2.5));
                 p.GACC = GACC;
                 p.Money -= cost;
                 upgradegunnerbtn.innerHTML = ("Upgrade Gunner<br>$" + ((p.GL * 150) + 150));
