@@ -224,6 +224,8 @@
             ACCL: 0,
             SL: 0, //start level
             SLL: 0,
+            CC: 5, //crit chance
+            CCL: 0, //crit chance level
 
             TK: 0, //total kills
             TBK: 0, //total boss kills
@@ -252,6 +254,8 @@
             GACC: 4, //gunner accuracy
             GARP: 0, //gunner armor piercing
             GARPL: 0, //gunner armor piercing level
+            GCC: 5, //gunner crit chance
+            GCCL: 0, //gunner crit chance level
 
             EPD: 25, //enemies per day
             ESR: 2500, //enemy spawn rate
@@ -486,7 +490,7 @@
                 xpbar.value = p.XP;
             }
             xptxt.innerHTML = (Math.round(p.XP) + "XP/" + p.NXP + "XP");
-            if (p.XP >= p.NXP) {
+            if ((Math.round(p.XP)) >= p.NXP) {
                 levelup();
             }
         }
@@ -828,8 +832,8 @@
             }
 
             let e = {
-                health: Ehealth[rng],
-                mh: Emh[rng],
+                health: Math.round((Ehealth[rng] * ((p.Day / 15) + 1))),
+                mh: Math.round((Emh[rng] * ((p.Day / 15) + 1))),
                 armor: Earmor[rng],
                 damage: Edamage[rng],
                 speed: Espeed[rng],
@@ -875,10 +879,24 @@
                     let BY = b.cy;
                     if ((BX > EX) && (BX < (EX + e.size)) && (BY > EY) && (BY < (EY + e.size))) {
                         if (e.id != b.id) {
+                            let damage;
+                            let rngdamage = (Math.random() * 100);
                             if (b.type == "user") {
-                                e.health -= (p.FP - ((e.armor / 100) * p.FP));
+                                if (p.CC >= rngdamage) {
+                                    damage = (p.FP * 2);
+                                    console.log("Crit!");
+                                } else {
+                                    damage = p.FP;
+                                }
+                                e.health -= (damage - ((e.armor / 100) * p.FP));
                             } else {
-                                e.health -= (p.GFP - ((e.armor / 100) * p.GFP));
+                                if (p.GCC >= rngdamage) {
+                                    damage = (p.GFP * 2);
+                                    console.log("Crit!");
+                                } else {
+                                    damage = P.GFP;
+                                }
+                                e.health -= (damage - ((e.armor / 100) * p.GFP));
                             }
                             if (b.type == "user") {
                                 p.TH++;
@@ -895,6 +913,7 @@
                                 if (b.type == "user") {
                                     if (e.type == "b") {
                                         p.TBK++;
+                                        p.Tokens++;
                                     } else {
                                         p.TK++;
                                         p.TKA[e.en] = (p.TKA[e.en] + 1);
@@ -902,6 +921,7 @@
                                 } else {
                                     if (e.type == "b") {
                                         p.TGBK++;
+                                        p.Tokens++;
                                     } else {
                                         p.TGK++;
                                         p.TGKA[e.en] = (p.TGKA[e.en] + 1);
