@@ -192,18 +192,11 @@
 
                 fr.readAsText(this.files[0]);
             });
-        function savegame() { //downloads a text file for the user
-            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(p));
-            var dlAnchorElem = document.getElementById('downloadAnchorElem');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", "geometrydefense.txt");
-            dlAnchorElem.click();
-        }
     </script>
 
     <script>
 
-        let p; //main player
+        var p; //main player
         let newdata = {
             XP: 0,
             Level: 1,
@@ -218,6 +211,8 @@
             BSL: 0,
             FP: 10, //fire power
             FPL: 0,
+            ARP: 0, //armor piercing
+            ARPL: 0,
             EM: 1, //earning multiplier
             EMLL: 0,
             ACC: 5, //accuracy
@@ -226,9 +221,13 @@
             SLL: 0,
 
             TK: 0, //total kills
+            TBK: 0, //total boss kills
+            TKA: new Array(40), //total kill array
             TH: 0, //total hits
             TM: 0, //total missess
             TGK: 0, //total gunner kills
+            TGBK: 0, //total gunner boss kills
+            TGKA: new Array(40), //total gunner kill array
             TGH: 0, //total gunner hits
             TGM: 0, //total gunner missess
             TDP: 0, //total days played
@@ -243,8 +242,8 @@
             Gunners: 0, //people who shoot for you
             GL: 0, //gunner level
             GSI: 2500, //gunner shooting interval
-            GBS: 0.75, //gunner bullet speed
-            GFP: 10, //gunner fire power
+            GBS: 0.5, //gunner bullet speed
+            GFP: 5, //gunner fire power
             GACC: 4, //gunner accuracy
 
             EPD: 25, //enemies per day
@@ -252,73 +251,23 @@
             EML: 1 //enemy max level
         }
 
-        const enemyarray = {
-            "E0": {
-                health: 10,
-                MH: 10,
-                damage: 10,
-                speed: 0.05,
-                color: "black",
-                size: 20,
-                killearning: 1,
-                xp: 1,
-                cx: 0,
-                cy: 0,
-                id: -1
-            },
-            "E1": {
-                health: 20,
-                MH: 20,
-                damage: 20,
-                speed: 0.05,
-                color: "red",
-                size: 20,
-                killearning: 2,
-                xp: 2,
-                cx: 0,
-                cy: 0,
-                id: -1
-            },
-            "E2": {
-                health: 10,
-                MH: 10,
-                damage: 10,
-                speed: 0.1,
-                color: "lime",
-                size: 20,
-                killearning: 2,
-                xp: 3,
-                cx: 0,
-                cy: 0,
-                id: -1
-            },
-            "E3": {
-                health: 150,
-                MH: 150,
-                damage: 100,
-                speed: 0.03,
-                color: "black",
-                size: 60,
-                killearning: 10,
-                xp: 12,
-                cx: 0,
-                cy: 0,
-                id: -1
-            },
-            "E4": {
-                health: 100,
-                MH: 150,
-                damage: 50,
-                speed: 0.075,
-                color: "orange",
-                size: 20,
-                killearning: 15,
-                xp: 15,
-                cx: 0,
-                cy: 0,
-                id: -1
-            }
-        }
+        const Ehealth = [10, 20, 10, 150, 150];
+        const Emh = [10, 20, 10, 150, 150];
+        const Earmor = [0, 0, 0, 0, 0, 0];
+        const Edamage = [10, 20, 10, 100, 50];
+        const Espeed = [0.05, 0.05, 0.1, 0.03, 0.075];
+        const Eyspeed = [0, 0, 0, 0, 0];
+        const Ecolor = ["black", "red", "lime", "black", "orange"];
+        const Esize = [20, 20, 20, 60, 20];
+        const Ekillearning = [1, 2, 2, 10, 15];
+        const Exp = [1, 2, 3, 12, 15];
+        const Ecx = [0]; //only need one
+        const Ecy = [0]; //only need one
+        const Ety = [-1]; //only need one
+        const Eyud = ["+"]; //only need one
+        const Een = []; //not needed
+        const Etype = ["n", "n", "n", "n", "n"];
+        const Eid = [-1]; //only need one
 
         let canvas = document.getElementById("myCanvas");
         let ctx = canvas.getContext("2d");
@@ -354,6 +303,7 @@
         let MY; //mouse Y
         var interval; //timer
         let pp = false;
+        let leveling = false;
         let lastms = 0;
         let lasttime = 0;
 
@@ -366,8 +316,6 @@
         let lefttospawn = 0; //enemies left to spawn in the day
         let currentenemies = 0;
         let ML; //max level
-
-        let bulletspeed = 10;
 
         let bullets = new Array();
         let enemies = new Array();
@@ -400,7 +348,19 @@
 
         function load(file) { //load file from system
             p = JSON.parse(file);
+            p.TKA = (p.TKA.split(",")).map(Number);
+            p.TGKA = (p.TGKA.split(",")).map(Number);
             start();
+        }
+
+        function savegame() { //downloads a text file for the user
+            p.TKA = (p.TKA.toString());
+            p.TGKA = (p.TGKA.toString());
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(p));
+            var dlAnchorElem = document.getElementById('downloadAnchorElem');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "geometrydefense.txt");
+            dlAnchorElem.click();
         }
 
         function start() {
@@ -437,8 +397,8 @@
                 GACC = 0;
             }
             p.GSI = GSI;
-            p.GBS = (0.75 + (p.GL * 0.05));
-            p.GFP = (10 + (p.GL * 5));
+            p.GBS = (0.5 + (p.GL * 0.025));
+            p.GFP = (5 + (p.GL * 2.5));
             p.GACC = GACC;
         }
 
@@ -463,6 +423,12 @@
 
         function newgame() { //starting a new game
             p = newdata;
+            for (let i = 0; i < p.TKA.length; i++) {
+                p.TKA[i] = 0;
+            }
+            for (let i = 0; i < p.TGKA.length; i++) {
+                p.TGKA[i] = 0;
+            }
             start();
         }
 
@@ -470,18 +436,21 @@
             p.Day++;
             p.TDP++;
             daytxt.innerHTML = ("Day: " + p.Day);
-            lefttospawn = p.EPD;
-            currentenemies = p.EPD;
             srbtn.style.display = "none";
             ppbtn.style.display = "block";
             ML = (Math.floor(p.Day / 10) + 1);
             if (ML > 5) {
                 ML = 5;
             }
-            p.EPD = ((p.Day * 5) + 20); //add 5 more enemies to each day
+            p.EPD = (((Math.floor(p.Day / 3)) * 5) + 20); //add 5 more enemies to each day
             p.ESR = (2510 - (p.Day * 10)); //make the spawn interval 25ms less
             if (p.ESR < 100) {
                 p.ESR = 100;
+            }
+            lefttospawn = p.EPD;
+            currentenemies = p.EPD;
+            if ((p.Day % 5) == 0) {
+                currentenemies++;
             }
             xpm = ((p.Day / 50) + 1); //set the xp multiplier
             rungame();
@@ -498,7 +467,7 @@
             if (add > 150) {
                 add = 150;
             }
-            p.Money += add;
+            p.Money = Math.round(p.Money + add);
             updatestats();
         }
 
@@ -506,23 +475,17 @@
             enemiestxt.innerHTML = ("Enemies: " + currentenemies + "/" + p.EPD);
             moneytxt.innerHTML = ("$" + p.Money);
             bhtxt.innerHTML = (p.BH + "/" + ((p.BL * 50) + 150) + " HP");
-            xpbar.value = p.XP;
+            if (leveling == false) {
+                xpbar.value = p.XP;
+            }
             xptxt.innerHTML = (Math.round(p.XP) + "XP/" + p.NXP + "XP");
             if (p.XP >= p.NXP) {
-                p.NXP += ((Math.ceil(p.Level / 5) * 25) + 25); //set the next level of XP
-                p.Level++;
-                lvltxt.innerHTML = ("Level: " + p.Level);
-                xpbar.max = p.NXP;
-                p.Money += (p.Level * 10 * p.EM);
-                if (p.Level == p.NAP) {
-                    p.NAP += 10;
-                    p.AP++;
-                    unlocksbtn.innerHTML = ("Unlocks<br>" + p.AP + " Ability Points");
-                }
+                levelup();
             }
         }
 
         function rungame() { //has a timer to run the game
+            let bossspawned = false;
             interval = setInterval(() => {
                 let ms = performance.now();
                 let delta = (ms - lastms);
@@ -549,6 +512,9 @@
                 }
                 if (currentenemies <= 0) {
                     endday();
+                } else if ((currentenemies == 1) && ((p.Day % 5) == 0) && (bossspawned == false)) {
+                    bossspawned = true;
+                    spawnboss();
                 }
 
             }, 2);
@@ -602,8 +568,29 @@
                     let e = enemies[i];
                     if (e.cx < (canvas.width - 20)) {
                         let NX = (e.cx + (e.speed * delta));
-                        drawenemy(NX, e.cy, e);
+                        let NY = e.cy;
+                        if ((e.type == "b") || (e.type.includes("y"))) { //if this enemy can move on the Y axis
+                            if ((e.ty == -1) || ((e.cy > e.ty) && (e.yud == "+")) || ((e.cy < e.ty) && (e.yud == "-"))) {
+                                let plusminus = Math.random();
+                                let factor = (Math.random() * e.yspeed * 1250);
+                                if (((plusminus >= 0.5) && ((e.cy + factor) < (canvas.height - e.size))) || ((plusminus < 0.5) && ((e.cy - factor) < 20))) {
+                                    e.ty = (e.cy + factor);
+                                    e.yud = "+";
+                                } else {
+                                    e.ty = (e.cy - factor);
+                                    e.yud = "-";
+                                }
+                            } else {
+                                if (e.yud == "+") {
+                                    NY = (e.cy + (e.yspeed * delta));
+                                } else {
+                                    NY = (e.cy - (e.yspeed * delta));
+                                }
+                            }
+                        }
                         e.cx = NX;
+                        e.cy = NY;
+                        drawenemy(NX, NY, e);
                     } else {
                         enemies.splice(i, 1);
                         i--;
@@ -623,21 +610,30 @@
             ctx.rect(x, y, e.size, e.size);
             ctx.fill();
             ctx.closePath();
-            if ((e.MH > p.FP) || ((p.Gunners > 0) && (e.MH > p.GFP))) { //if the enemy started with more then 1 health point
+            if ((e.mh > (p.FP - ((e.armor / 100) * p.FP))) || ((p.Gunners > 0) && (e.mh > (p.GFP - ((e.armor / 100) * p.GFP))))) { //if the enemy takes more then one bullet to kill
                 let size = e.size;
-                let green = Math.round((e.health / e.MH) * size);
+                let yfactor = 10;
+                let LW = 3;
+                if (e.type == "b") {
+                    size = (size * 2);
+                    yfactor = 20;
+                    LW = 6;
+                }
+                let green = Math.round((e.health / e.mh) * size);
 
                 ctx.beginPath(); //green part of health bar
+                ctx.lineWidth = LW;
                 ctx.strokeStyle = "green";
-                ctx.moveTo(x, (y - 10));
-                ctx.lineTo((x + green), (y - 10));
+                ctx.moveTo(x, (y - yfactor));
+                ctx.lineTo((x + green), (y - yfactor));
                 ctx.stroke();
                 ctx.closePath();
 
                 ctx.beginPath(); //red part of health bar
+                ctx.lineWidth = LW;
                 ctx.strokeStyle = "red";
-                ctx.moveTo((x + green), (y - 10));
-                ctx.lineTo((x + e.size), (y - 10));
+                ctx.moveTo((x + green), (y - yfactor));
+                ctx.lineTo((x + size), (y - yfactor));
                 ctx.stroke();
                 ctx.closePath();
             }
@@ -799,34 +795,43 @@
         }
 
         function spawnenemy() {
-            let SY = Math.round(Math.random() * (canvas.height / 1.2));
-            SY += 50;
-
             let rng = Math.floor(Math.random() * ML); //what enemy to spawn
             let rng2 = Math.random(); //make it more common for lower level troops
             if (rng2 < 0.5) {
-                rng--;
-            } else if (rng2 < 0.75) {
                 rng -= 2;
+            } else if (rng2 < 0.75) {
+                rng--;
             }
             if (rng < 0) {
                 rng = 0;
             }
-            let e;
 
-            if (rng == 0) {
-                e = JSON.parse(JSON.stringify(enemyarray.E0));
-            } else if (rng == 1) {
-                e = JSON.parse(JSON.stringify(enemyarray.E1));
-            } else if (rng == 2) {
-                e = JSON.parse(JSON.stringify(enemyarray.E2));
-            } else if (rng == 3) {
-                e = JSON.parse(JSON.stringify(enemyarray.E3));
-            } else if (rng == 4) {
-                e = JSON.parse(JSON.stringify(enemyarray.E4));
+            let e = {
+                health: Ehealth[rng],
+                mh: Emh[rng],
+                armor: Earmor[rng],
+                damage: Edamage[rng],
+                speed: Espeed[rng],
+                yspeed: Eyspeed[rng],
+                color: Ecolor[rng],
+                size: Esize[rng],
+                killearning: Ekillearning[rng],
+                xp: Exp[rng],
+                cx: 0,
+                cy: 0,
+                ty: -1,
+                yud: "+",
+                en: rng,
+                type: Etype[rng],
+                id: -1
+            }
+            let SY = Math.round(Math.random() * canvas.height);
+            if (SY < 20) {
+                SY = 20;
+            } else if ((SY + e.size + 20) > canvas.height) {
+                SY = (canvas.height - e.size - 20);
             }
             e.cy = SY;
-
             enemies.push(e);
         }
 
@@ -849,7 +854,11 @@
                     let BY = b.cy;
                     if ((BX > EX) && (BX < (EX + e.size)) && (BY > EY) && (BY < (EY + e.size))) {
                         if (e.id != b.id) {
-                            e.health -= p.FP;
+                            if (b.type == "user") {
+                                e.health -= (p.FP - ((e.armor / 100) * p.FP));
+                            } else {
+                                e.health -= (p.GFP - ((e.armor / 100) * p.GFP));
+                            }
                             if (b.type == "user") {
                                 p.TH++;
                             } else {
@@ -863,9 +872,19 @@
                                 p.XP += (e.xp * xpm); //add XP for kill
                                 p.XP = parseFloat(p.XP.toFixed(3));
                                 if (b.type == "user") {
-                                    p.TK++;
+                                    if (e.type == "b") {
+                                        p.TBK++;
+                                    } else {
+                                        p.TK++;
+                                        p.TKA[e.en] = (p.TKA[e.en] + 1);
+                                    }
                                 } else {
-                                    p.TGK++;
+                                    if (e.type == "b") {
+                                        p.TGBK++;
+                                    } else {
+                                        p.TGK++;
+                                        p.TGKA[e.en] = (p.TGKA[e.en] + 1);
+                                    }
                                 }
                                 currentenemies--;
                                 enemies.splice(i, 1);
@@ -1037,8 +1056,8 @@
             p.Guns = 1; //number of guns you shoot
             p.Gunners = 0; //people who shoot for you
             p.GSI = 2500; //gunner shooting interval
-            p.GBS = 0.75; //gunner bullet speed
-            p.GFP = 10; //gunner fire power
+            p.GBS = 0.5; //gunner bullet speed
+            p.GFP = 5; //gunner fire power
             p.GACC = 4; //gunner accuracy
 
             p.EPD = 25; //enemies per day
@@ -1094,8 +1113,8 @@
                     GACC = 0;
                 }
                 p.GSI = GSI;
-                p.GBS = (0.75 + (p.GL * 0.05));
-                p.GFP = (10 + (p.GL * 5));
+                p.GBS = (0.5 + (p.GL * 0.025));
+                p.GFP = (5 + (p.GL * 2.5));
                 p.GACC = GACC;
                 p.Money -= cost;
                 upgradegunnerbtn.innerHTML = ("Upgrade Gunner<br>$" + ((p.GL * 150) + 150));
@@ -1204,6 +1223,66 @@
                 }
                 bullets.push(bullet2);
             }
+        }
+
+        function levelup() {
+            leveling = true;
+            p.NXP += ((Math.ceil(p.Level / 5) * 25) + 25); //set the next level of XP
+            p.Level++;
+            lvltxt.innerHTML = ("Level: " + p.Level);
+            xpbar.max = p.NXP;
+            xpbar.value = 0;
+            p.Money += (p.Level * 10 * p.EM);
+            if (p.Level == p.NAP) {
+                p.NAP += 10;
+                p.AP++;
+                unlocksbtn.innerHTML = ("Unlocks<br>" + p.AP + " Ability Points");
+            }
+            let i = 0;
+            let intnum = 1.5;
+            var levelint = setInterval(() => {
+                xpbar.value = i;
+                i += (p.NXP / 1000);
+                if (i >= xpbar.max) {
+                    clearInterval(levelint);
+                    var levelint2 = setInterval(() => {
+                        xpbar.value = i;
+                        i -= (p.NXP / 1000);
+                        if (i <= p.XP) {
+                            clearInterval(levelint2);
+                            xpbar.value = p.XP;
+                            leveling = false;
+                        }
+                    }, intnum);
+                }
+            }, intnum);
+        }
+
+        function spawnboss() {
+            let armor = p.Day;
+            if (armor > 90) {
+                armor = 90;
+            }
+            let boss = {
+                health: (p.Day * 10),
+                mh: (p.Day * 10),
+                armor: (p.Day / 10),
+                damage: (p.Day * 10),
+                speed: 0.075,
+                yspeed: 0.025,
+                color: "grey",
+                size: 30,
+                killearning: (p.Day * 10),
+                xp: (p.Day * 10),
+                cx: 0,
+                cy: (canvas.height / 2),
+                ty: -1,
+                yud: "+",
+                en: 0,
+                type: "b",
+                id: -1
+            }
+            enemies.push(boss);
         }
     </script>
     </script>
