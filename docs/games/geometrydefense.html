@@ -152,18 +152,21 @@
         <button id="ubtn2" class="unlocks" style="left:100px;top:220px;" onclick="unlock(2)">Fire Power</button>
         <button id="ubtn3" class="unlocks" style="left:100px;top:280px;" onclick="unlock(3)">Earning Multiplier</button>
         <button id="ubtn4" class="unlocks" style="left:100px;top:340px;" onclick="unlock(4)">Accuracy</button>
+        <button id="ubtn5" class="unlocks" style="left:100px;top:400px;" onclick="unlock(5)">Armor Piercing</button>
 
         <progress class="unlockprogress" id="ubar0" value="0" max="20" style="left:230px;top:115px;"></progress>
         <progress class="unlockprogress" id="ubar1" value="0" max="20" style="left:230px;top:175px;"></progress>
         <progress class="unlockprogress" id="ubar2" value="0" max="20" style="left:230px;top:235px;"></progress>
         <progress class="unlockprogress" id="ubar3" value="0" max="20" style="left:230px;top:295px;"></progress>
         <progress class="unlockprogress" id="ubar4" value="0" max="20" style="left:230px;top:355px;"></progress>
+        <progress class="unlockprogress" id="ubar5" value="0" max="20" style="left:230px;top:415px;"></progress>
 
         <p id="utxt0" class="p" style="left:240px;top:100px;font-size:20px;text-align: center;">100 | +50</p>
         <p id="utxt1" class="p" style="left:240px;top:160px;font-size:20px;text-align: center;">0.6 | +0.1</p>
         <p id="utxt2" class="p" style="left:240px;top:220px;font-size:20px;text-align: center;">1 | +1</p>
         <p id="utxt3" class="p" style="left:240px;top:280px;font-size:20px;text-align: center;">1 | +0.5</p>
         <p id="utxt4" class="p" style="left:240px;top:340px;font-size:20px;text-align: center;">5 | +0.25</p>
+        <p id="utxt5" class="p" style="left:240px;top:400px;font-size:20px;text-align: center;">0 | +0.25</p>
     </div>
 
     <div id="gameoverdiv" style="display: none; left: 50%;">
@@ -205,6 +208,8 @@
             NAP: 10, //next level to gain an ability point
 
             AP: 0, //ability points
+            TAP: 0, //total ability points
+            Tokens: 0,
             SI: 900, //shooting interval (fire rate)
             SIL: 0,
             BS: 0.6, //bullet speed
@@ -245,28 +250,30 @@
             GBS: 0.5, //gunner bullet speed
             GFP: 5, //gunner fire power
             GACC: 4, //gunner accuracy
+            GARP: 0, //gunner armor piercing
+            GARPL: 0, //gunner armor piercing level
 
             EPD: 25, //enemies per day
             ESR: 2500, //enemy spawn rate
             EML: 1 //enemy max level
         }
 
-        const Ehealth = [10, 20, 10, 150, 150];
-        const Emh = [10, 20, 10, 150, 150];
-        const Earmor = [0, 0, 0, 0, 0, 0];
-        const Edamage = [10, 20, 10, 100, 50];
-        const Espeed = [0.05, 0.05, 0.1, 0.03, 0.075];
-        const Eyspeed = [0, 0, 0, 0, 0];
-        const Ecolor = ["black", "red", "lime", "black", "orange"];
-        const Esize = [20, 20, 20, 60, 20];
-        const Ekillearning = [1, 2, 2, 10, 15];
-        const Exp = [1, 2, 3, 12, 15];
+        const Ehealth = [10, 20, 10, 150, 150, 1, 200];
+        const Emh = [10, 20, 10, 150, 150, 1, 200];
+        const Earmor = [0, 0, 0, 0, 0, 0, 0, 35];
+        const Edamage = [10, 20, 10, 100, 50, 25, 25];
+        const Espeed = [0.05, 0.05, 0.1, 0.03, 0.075, 0.2, 0.05];
+        const Eyspeed = [0, 0, 0, 0, 0, 0, 0];
+        const Ecolor = ["black", "red", "lime", "black", "orange", "yellow", "purple"];
+        const Esize = [20, 20, 20, 60, 20, 20, 40];
+        const Ekillearning = [1, 2, 2, 10, 15, 7, 16];
+        const Exp = [1, 2, 3, 12, 15, 7, 16];
         const Ecx = [0]; //only need one
         const Ecy = [0]; //only need one
         const Ety = [-1]; //only need one
         const Eyud = ["+"]; //only need one
         const Een = []; //not needed
-        const Etype = ["n", "n", "n", "n", "n"];
+        const Etype = ["n", "n", "n", "n", "n", "t", "s"]; //n = normal, t = triangle, s = splitter
         const Eid = [-1]; //only need one
 
         let canvas = document.getElementById("myCanvas");
@@ -438,7 +445,7 @@
             daytxt.innerHTML = ("Day: " + p.Day);
             srbtn.style.display = "none";
             ppbtn.style.display = "block";
-            ML = (Math.floor(p.Day / 10) + 1);
+            ML = (Math.floor(p.Day / 5) + 1);
             if (ML > 5) {
                 ML = 5;
             }
@@ -573,7 +580,7 @@
                             if ((e.ty == -1) || ((e.cy > e.ty) && (e.yud == "+")) || ((e.cy < e.ty) && (e.yud == "-"))) {
                                 let plusminus = Math.random();
                                 let factor = (Math.random() * e.yspeed * 1250);
-                                if (((plusminus >= 0.5) && ((e.cy + factor) < (canvas.height - e.size))) || ((plusminus < 0.5) && ((e.cy - factor) < 20))) {
+                                if (((plusminus >= 0.5) && ((e.cy + factor) < (canvas.height - e.size - 20))) || ((plusminus < 0.5) && ((e.cy - factor) < 20))) {
                                     e.ty = (e.cy + factor);
                                     e.yud = "+";
                                 } else {
@@ -605,11 +612,25 @@
         }
 
         function drawenemy(x, y, e) {
-            ctx.fillStyle = e.color;
-            ctx.beginPath();
-            ctx.rect(x, y, e.size, e.size);
-            ctx.fill();
-            ctx.closePath();
+            if (e.type.includes("t")) {
+                let right = e.size * Math.cos(Math.PI / 6);
+                ctx.strokeStyle = e.color;
+                ctx.fillStyle = e.color;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(e.cx, e.cy);
+                ctx.lineTo(e.cx, (e.cy + e.size));
+                ctx.lineTo((e.cx + right), (e.cy + (e.size / 2)));
+                ctx.stroke();
+                ctx.fill();
+                ctx.closePath();
+            } else {
+                ctx.fillStyle = e.color;
+                ctx.beginPath();
+                ctx.rect(x, y, e.size, e.size);
+                ctx.fill();
+                ctx.closePath();
+            }
             if ((e.mh > (p.FP - ((e.armor / 100) * p.FP))) || ((p.Gunners > 0) && (e.mh > (p.GFP - ((e.armor / 100) * p.GFP))))) { //if the enemy takes more then one bullet to kill
                 let size = e.size;
                 let yfactor = 10;
@@ -867,7 +888,7 @@
                             e.id = -1;
                             bullets.splice(i2, 1);
                             i2 = bullets.length;
-                            if (e.health <= 0) {
+                            if (e.health <= 0) { //if the enemy is dead
                                 p.Money += (e.killearning * p.EM); //add money for kill
                                 p.XP += (e.xp * xpm); //add XP for kill
                                 p.XP = parseFloat(p.XP.toFixed(3));
@@ -886,10 +907,58 @@
                                         p.TGKA[e.en] = (p.TGKA[e.en] + 1);
                                     }
                                 }
-                                currentenemies--;
+                                if ((!e.type.includes("s")) || ((e.type.includes("s")) && (e.mh == Emh[e.en]))) {
+                                    currentenemies--;
+                                }
                                 enemies.splice(i, 1);
                                 i--;
                                 i2 = bullets.length;
+
+                                if ((e.type.includes("s")) && ((e.mh == Emh[e.en]))) {
+                                    let newe = {
+                                        health: (Ehealth[(e.en)] / 4),
+                                        mh: (Emh[(e.en)] / 4),
+                                        armor: (Earmor[(e.en)] / 4),
+                                        damage: (Edamage[(e.en)] / 4),
+                                        speed: Espeed[(e.en)],
+                                        yspeed: (Eyspeed[(e.en)] / 4),
+                                        color: (Ecolor[(e.en)]),
+                                        size: (Esize[(e.en)] / 2),
+                                        killearning: (Ekillearning[(e.en)] / 4),
+                                        xp: (Exp[(e.en)] / 4),
+                                        cx: 0,
+                                        cy: 0,
+                                        ty: -1,
+                                        yud: "+",
+                                        en: e.en,
+                                        type: Etype[(e.en)],
+                                        id: -1
+                                    }
+                                    let newe2 = JSON.parse(JSON.stringify(newe));
+                                    let newe3 = JSON.parse(JSON.stringify(newe));
+                                    let newe4 = JSON.parse(JSON.stringify(newe));
+                                    let yfactor = 0;
+
+                                    if ((e.cy - e.size) < 0) {
+                                        factor = -(e.cy - e.size);
+                                    } else if ((e.cy + e.size) > (canvas.height + 20)) {
+                                        factor = -((e.cy + e.size) - (canvas.height - 20));
+                                    }
+                                    newe.cx = (e.cx - e.size + yfactor);
+                                    newe.cy = (e.cy - e.size + yfactor);
+                                    newe2.cx = (e.cx + e.size + yfactor);
+                                    newe2.cy = (e.cy - e.size + yfactor);
+                                    newe3.cx = (e.cx + e.size + yfactor);
+                                    newe3.cy = (e.cy + e.size + yfactor);
+                                    newe4.cx = (e.cx - e.size + yfactor);
+                                    newe4.cy = (e.cy + e.size + yfactor);
+                                    enemies.push(newe);
+                                    enemies.push(newe2);
+                                    enemies.push(newe3);
+                                    enemies.push(newe4);
+                                } else {
+
+                                }
                             } else {
                                 e.id = b.id;
                             }
@@ -972,6 +1041,8 @@
                 document.getElementById("ubar3").value = p.EMLL;
                 document.getElementById("utxt4").innerHTML = (10 - p.ACC + " | +0.25");
                 document.getElementById("ubar4").value = p.ACCL;
+                document.getElementById("utxt5").innerHTML = (p.ARP + " | +0.25");
+                document.getElementById("ubar5").value = p.ARPL;
             } else { //unlocks shown
                 xpbar.style.display = "block";
                 xptxt.style.display = "block";
@@ -1023,6 +1094,11 @@
                     p.ACC -= 0.25;
                     p.ACCL++;
                     utxt.innerHTML = (10 - p.ACC + " | +0.25");
+                    break;
+                case 5: //armor piercing
+                    p.ARP += 0.25;
+                    p.ARPL++;
+                    utxt.innerHTML = (p.ARP + " | +0.25");
                     break;
             }
         }
@@ -1236,6 +1312,7 @@
             if (p.Level == p.NAP) {
                 p.NAP += 10;
                 p.AP++;
+                p.TAP++;
                 unlocksbtn.innerHTML = ("Unlocks<br>" + p.AP + " Ability Points");
             }
             let i = 0;
