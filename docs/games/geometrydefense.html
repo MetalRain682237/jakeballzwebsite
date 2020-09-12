@@ -111,8 +111,9 @@
     <p id="title" class="pcent" style="top: 100px; font-size: 100px; display: block; text-align: center;">Geometry
         Defense</p>
     <p id="titletext" class="pcent" style="top: 325px; font-size: 25px; display: block; text-align: left;">The geometry
-        gets what it deserves...<br><br>Get to the highest day possible<br>Ability points are earned every 10 levels and
-        never get reset<br>Ability points can be used for upgrades<br>Money and upgrades bought with money restart when
+        gets what it deserves...<br><br>Get to the highest day possible<br>Ability points are earned every 10 levels or
+        with tokens and
+        never get reset<br>Tokens are dropped by boses<br>Money and upgrades that bought with money restart when
         you lose</p>
 
     <button id="pp" class="button" style="left:20px;top:20px;display:none;" onclick="pauseplay()">Pause</button>
@@ -329,8 +330,9 @@
         let currentenemies = 0;
         let ML; //max level
 
-        let bullets = new Array();
-        let enemies = new Array();
+        var bullets = new Array();
+        var enemies = new Array();
+        var crits = new Array();
 
         function loaded() {
             savebtn = document.getElementById("save");
@@ -506,6 +508,7 @@
                 moveenemies(ms, lastms, delta);
                 drawbarrel(MX, MY);
                 movebullets(ms, lastms, delta);
+                drawcritanim(delta);
                 checkhit();
                 updatestats();
                 lastms = ms;
@@ -569,6 +572,7 @@
                             p.TGM++;
                         }
                         bullets.splice(i, 1);
+                        i--;
                     }
                 }
             }
@@ -885,7 +889,7 @@
                             if (b.type == "user") {
                                 if (p.CC >= rngdamage) {
                                     damage = (p.FP * 2);
-                                    console.log("Crit!");
+                                    critanim(e, b);
                                 } else {
                                     damage = p.FP;
                                 }
@@ -893,7 +897,7 @@
                             } else {
                                 if (p.GCC >= rngdamage) {
                                     damage = (p.GFP * 2);
-                                    console.log("Crit!");
+                                    critanim(e, b);
                                 } else {
                                     damage = p.GFP;
                                 }
@@ -1381,6 +1385,60 @@
                 id: -1
             }
             enemies.push(boss);
+        }
+
+        function critanim(e, b) {
+            let c = {
+                ix: e.cx,
+                x: (e.cx + e.size),
+                y: (e.cy + (e.size / 2)),
+                xadd: 0,
+                yadd: 5,
+                ud: "u"
+            }
+            let c2 = {
+                ix: e.cx,
+                x: (e.cx + e.size),
+                y: (e.cy + (e.size / 2)),
+                xadd: 0,
+                yadd: 5,
+                ud: "d"
+            }
+            crits.push(c);
+            crits.push(c2);
+        }
+
+        function drawcritanim(delta) {
+            if (crits.length == 0) return;
+            for (let i = 0; i < crits.length; i++) {
+                let c = crits[i];
+                c.x = (c.x + (0.1 * delta));
+
+                if (c.x > (c.ix + 50)) {
+                    crits.splice(i, 1);
+                    i--;
+                    continue;
+                }
+
+                if (c.ud == "u") {
+                    ctx.beginPath();
+                    ctx.lineWidth = 5;
+                    ctx.strokeStyle = "red";
+                    ctx.moveTo((c.x + c.xadd), (c.y + c.yadd));
+                    ctx.lineTo((c.x + c.xadd + 5), (c.y + c.yadd + 1));
+                    ctx.stroke();
+                    ctx.closePath();
+                } else {
+                    ctx.beginPath();
+                    ctx.lineWidth = 5;
+                    ctx.strokeStyle = "red";
+                    ctx.moveTo((c.x + c.xadd), (c.y - c.yadd));
+                    ctx.lineTo((c.x + c.xadd + 5), (c.y - c.yadd - 1));
+                    ctx.stroke();
+                    ctx.closePath();
+                }
+                c.yadd = (c.yadd + (0.05 * delta));
+            }
         }
     </script>
     </script>
